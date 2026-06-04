@@ -5,92 +5,227 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>小野字幕君</title>
+    <!-- 引入 Mammoth.js 處理 docx -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
     <style>
-        body {
-           background-color: #f5f5f5;
-            font-family: 'Noto Serif JP', serif;
-            padding: 20px;
-            margin: 0 auto;
-            width: 100%;
-            box-sizing: border-box;
-            padding-top: 120px; /* 为标题框留出足够的空间，60px 可根据标题框高度调整 */
+        :root {
+            --primary-bg: #f8f9fa;
+            --header-bg: #2c3e50;
+            --footer-bg: #ffffff;
+            --accent-color: #355c7d;
+            --accent-hover: #26435c;
+            --text-main: #333333;
+            --text-muted: #e0e0e0;
         }
+
+        body {
+            background-color: var(--primary-bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding-top: 70px; 
+            box-sizing: border-box;
+            color: var(--text-main);
+        }
+
+        /* ========== 頂部標題與工具列 ========== */
         .header {
-            position: fixed; 
-            top: 0; /* 固定在页面顶部 */
-            width: 100%; /* 占满整个宽度 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
             display: flex;
             align-items: center;
-            justify-content: space-between; /* 将标题和右侧功能分开 */
-            padding: 0px; /* 添加内边距 */
-            background: #2c3e50; /* 设置背景颜色 */
-            color: white; /* 设置文字颜色 */
-            border-radius: 5px; /* 边框圆角 */
-            z-index: 100; /* 保证标题框位于其他元素之上 */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 添加阴影 */
+            justify-content: space-between;
+            background: var(--header-bg);
+            color: white;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            padding: 0 20px;
+            box-sizing: border-box;
         }
+
         .header-title {
-          flex: 1; /* 标题占据左侧空间 */
-          padding-left: 5px; /* 增加左侧内边距，让文字更靠中间 */
+            display: flex;
+            align-items: baseline;
+            gap: 15px;
         }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: 1px;
+        }
+
+        .header-title p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
         .file-search-container {
-          display: flex;
-          
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
-          gap: 10px;
-          flex-shrink: 0; /* 防止因屏幕缩小而被压缩 */
+
+        input[type="file"] {
+            display: none;
         }
-              
-        input[type="file"],
-        .search-box {
-          padding: 3px;
-          width: auto;
-          max-width: 200px; 
-          
-         box-sizing: border-box;
-        		  border-radius: 4px;
-          
-        } 
-            
-        .subtitle {
-          font-size: 14px; /* 根据需要调整大小 */
-          margin: 5px 0;
-          padding: 8px;
-          line-height: 1.3;
-          border-radius: 2px;
-          background: white;
-          width: 100%;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          
-        }
-        .color1 { color: #212121; }
-        .color2 { color: #ff7043; }
-        .highlight {
-          background-color: yellow;
-          font-weight: bold;
-        }
-        
-        @media screen and (max-width: 768px) {
-          body {
-            padding: 10px;
-          }
-          .header {
-            flex-wrap: wrap;
+
+        .custom-file-upload {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: inline-block;
             text-align: center;
-          }
-          .file-search-container {
+            min-width: 100px; /* 確保按鈕有基本寬度 */
+        }
+
+        .custom-file-upload:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .search-box {
+            padding: 8px 12px;
+            width: 220px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .search-box:focus {
+            border-color: #3498db;
+        }
+
+        /* ========== 左右分欄主容器 ========== */
+        #main-container {
+            display: flex;
+            width: 100%;
+            min-height: calc(100vh - 70px);
+            box-sizing: border-box;
+        }
+
+        /* ========== 左側：字幕顯示區域 ========== */
+        #subtitles {
+            flex: 7;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            margin: 8px 0;
+            padding: 12px 15px;
+            line-height: 1.6;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+
+        .subtitle:hover {
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .color1 { color: #ff7043; } /* 第一行/單數行：橙色 */
+        .color2 { color: #555555; } /* 第二行/雙數行：深灰色 */
+        
+        .highlight {
+            background-color: #fff3cd;
+            color: #856404;
+            font-weight: bold;
+            padding: 0 2px;
+            border-radius: 3px;
+        }
+
+        /* ========== 右側：筆記區域 ========== */
+        #note-container {
+            flex: 3;
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            background-color: var(--footer-bg);
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
+            border-left: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 90;
+        }
+
+        textarea {
+            width: 100%;
+            flex: 1; 
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 14px;
+            font-family: inherit;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+            resize: none;
+            outline: none;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        textarea:focus {
+            border-color: var(--accent-color);
+        }
+
+        #button-group {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .note-btn {
+            flex: 1;
+            height: 45px;
+            cursor: pointer;
+            border: none;
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            width: 100%;
-            margin-right: 30px
-          }
-          input[type="file"],
-          .search-box {
-            width: 100%;
-          }
+        }
+
+        .note-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* ========== 響應式設計 ========== */
+        @media screen and (max-width: 768px) {
+            body { padding-top: 130px; padding-bottom: 200px; }
+            .header { height: auto; flex-direction: column; padding: 15px; gap: 15px; }
+            .header-title { flex-direction: column; align-items: center; gap: 5px; }
+            .file-search-container { width: 100%; justify-content: space-between; }
+            .search-box { flex: 1; width: auto; }
+            #main-container { flex-direction: column; min-height: auto; }
+            #subtitles { width: 100%; padding: 10px; }
+            #note-container {
+                position: fixed; bottom: 0; left: 0; width: 100%; height: 180px; 
+                border-left: none; border-top: 1px solid #e0e0e0;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); padding: 15px;
+            }
+            textarea { height: 60px; }
         }
     </style>
-    <!-- 引入 Mammoth.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
 </head>
 
 <body>
@@ -100,244 +235,255 @@
             <p>支持格式： .srt / .ass / .docx / .txt</p>
         </div>
         <div class="file-search-container">
-            <input type="file" id="fileInput" accept=".ass,.srt,.docx,.txt">
-            <input type="text" id="searchBox" class="search-box" placeholder="输入搜索内容...">
+            <label class="custom-file-upload">
+                <input type="file" id="fileInput" accept=".ass,.srt,.docx,.txt">
+                📁 選擇檔案
+            </label>
+            <input type="text" id="searchBox" class="search-box" placeholder="輸入搜索內容...">
         </div>
     </div>
-    <div id="subtitles"></div>
+
+    <div id="main-container">
+        <div id="subtitles">
+            <div style="text-align: center; color: #888; margin-top: 50px;">
+                請點擊右上角「選擇檔案」上傳字幕文件
+            </div>
+        </div>
+
+        <div id="note-container">
+            <textarea id="note" placeholder="在此輸入筆記..."></textarea>
+            <div id="button-group">
+                <button class="note-btn" onclick="copyNote()">複製</button>
+                <button class="note-btn" onclick="saveNote()">儲存</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // 搜索功能逻辑
+        // ================= 雙語字幕智慧處理 (日文在上，中文在下) =================
+        function processSubtitleText(linesArray) {
+            if (linesArray.length === 2) {
+                // 利用正則表達式判斷是否包含日文平假名或片假名
+                const hasKana = (str) => /[\u3040-\u309F\u30A0-\u30FF]/.test(str);
+                const line0IsJapanese = hasKana(linesArray[0]);
+                const line1IsJapanese = hasKana(linesArray[1]);
+                
+                // 如果第二行是日文，但第一行不是，就自動翻轉順序
+                if (!line0IsJapanese && line1IsJapanese) {
+                    return linesArray[1] + '<br>' + linesArray[0];
+                }
+                // 如果已經是日文在上，或者無法判別，則保持原本順序並分行
+                return linesArray[0] + '<br>' + linesArray[1];
+            }
+            // 單行或超過兩行的字幕，直接換行處理
+            return linesArray.join('<br>');
+        }
+
+        // ================= 搜尋功能邏輯 =================
         const searchBox = document.getElementById('searchBox');
         
         searchBox.addEventListener('input', () => {
-          const query = searchBox.value.trim();
-          const subtitles = document.querySelectorAll('.subtitle');
-          subtitles.forEach((subtitle, index) => {
-            const originalText = subtitle.dataset.original || subtitle.textContent;
-            subtitle.dataset.original = originalText;
-        
-            if (query) {
-              const regex = new RegExp(`(${query})`, 'gi');
-              if (originalText.match(regex)) {
-                const context = [];
-        // 添加前面的三行上下文
-        for (let i = Math.max(0, index - 2); i < index; i++) {
-          context.push(subtitles[i].dataset.original || subtitles[i].textContent);
-        }
-        // 添加匹配的行
-        context.push(originalText);
-        // 添加后面的三行上下文
-        for (let i = index + 1; i <= Math.min(subtitles.length - 1, index + 2); i++) {
-          context.push(subtitles[i].dataset.original || subtitles[i].textContent);
-        }
-        
-                subtitle.innerHTML = context
-                  subtitle.innerHTML = context
-          .map((text) => text.includes(query) // 检查该文本是否包含查询内容
-            ? text.replace(regex, '<span class="highlight">$1</span>') // 如果匹配则提亮
-            : text // 如果不匹配保持原样
-          ).join('<br>');
-        
-                subtitle.style.display = 'block';
-              } else {
-                subtitle.style.display = 'none';
-              }
-            } else {
-              subtitle.textContent = originalText;
-              subtitle.style.display = 'block';
-            }
-          });
+            const query = searchBox.value.trim();
+            const subtitles = document.querySelectorAll('.subtitle');
+            
+            subtitles.forEach((subtitle, index) => {
+                // 使用 innerHTML 來保留換行標籤 <br>
+                const originalHTML = subtitle.dataset.original || subtitle.innerHTML;
+                subtitle.dataset.original = originalHTML;
+            
+                if (query) {
+                    const regex = new RegExp(`(${query})`, 'gi');
+                    // 為了避免搜尋到 HTML 標籤，先拔掉 tags 確認是否有文字匹配
+                    const textContentOnly = originalHTML.replace(/<[^>]*>?/gm, ''); 
+                    
+                    if (textContentOnly.match(regex)) {
+                        const context = [];
+                        for (let i = Math.max(0, index - 2); i < index; i++) {
+                            context.push(subtitles[i].dataset.original || subtitles[i].innerHTML);
+                        }
+                        context.push(originalHTML);
+                        for (let i = index + 1; i <= Math.min(subtitles.length - 1, index + 2); i++) {
+                            context.push(subtitles[i].dataset.original || subtitles[i].innerHTML);
+                        }
+                        
+                        subtitle.innerHTML = context.map((textHTML) => {
+                            // 安全地只替換文字部分，不破壞 <br> 標籤
+                            const lines = textHTML.split('<br>');
+                            const processedLines = lines.map(line => {
+                                return line.includes(query) 
+                                    ? line.replace(regex, '<span class="highlight">$1</span>')
+                                    : line;
+                            });
+                            
+                            const finalHTML = processedLines.join('<br>');
+                            return textHTML.includes(query) 
+                                ? `<div>${finalHTML}</div>` 
+                                : `<div style="color:#b0b0b0">${finalHTML}</div>`;
+                        }).join('<div style="margin: 10px 0; border-top: 1px dashed #ddd;"></div>'); // 加入上下文分隔線
+            
+                        subtitle.style.display = 'block';
+                    } else {
+                        subtitle.style.display = 'none';
+                    }
+                } else {
+                    subtitle.innerHTML = originalHTML;
+                    subtitle.style.display = 'block';
+                }
+            });
         });
         
-        // 处理文件选择和解析
+        // ================= 處理文件選擇和解析 =================
         document.getElementById('fileInput').addEventListener('change', function(event) {
-          const file = event.target.files[0];
-          if (!file) return;
-        
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            try {
-              if (file.name.endsWith('.docx')) {
-                parseDOCX(e.target.result, displaySubtitles);
-              } else if (file.name.endsWith('.txt')) {
-                const content = e.target.result;
-                const subtitles = parseTXT(content);
-                displaySubtitles(subtitles);
-              } else {
-                const content = e.target.result;
-                const subtitles = file.name.endsWith('.ass') ? parseASS(content) : parseSRT(content);
-                displaySubtitles(subtitles);
-              }
-            } catch (error) {
-              showError(`解析失败: ${error.message}`);
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // 檔名智慧縮略邏輯
+            let displayName = file.name;
+            if (displayName.length > 15) {
+                const extIndex = displayName.lastIndexOf('.');
+                if (extIndex !== -1 && displayName.length - extIndex <= 6) {
+                    const namePart = displayName.substring(0, extIndex);
+                    const extPart = displayName.substring(extIndex);
+                    displayName = namePart.substring(0, 8) + '...' + extPart;
+                } else {
+                    displayName = displayName.substring(0, 15) + '...';
+                }
             }
-          };
-          reader.onerror = () => showError('文件读取失败');
-          file.name.endsWith('.docx') ? reader.readAsArrayBuffer(file) : reader.readAsText(file, 'utf-8');
+            
+            const uploadBtn = document.querySelector('.custom-file-upload');
+            uploadBtn.innerHTML = `✔️ ${displayName}`;
+            uploadBtn.title = file.name; // 滑鼠停留在按鈕上可以看完整檔名
+        
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    if (file.name.endsWith('.docx')) {
+                        parseDOCX(e.target.result, displaySubtitles);
+                    } else if (file.name.endsWith('.txt')) {
+                        const content = e.target.result;
+                        const subtitles = parseTXT(content);
+                        displaySubtitles(subtitles);
+                    } else {
+                        const content = e.target.result;
+                        const subtitles = file.name.endsWith('.ass') ? parseASS(content) : parseSRT(content);
+                        displaySubtitles(subtitles);
+                    }
+                } catch (error) {
+                    showError(`解析失敗: ${error.message}`);
+                }
+            };
+            reader.onerror = () => showError('文件讀取失敗');
+            
+            file.name.endsWith('.docx') ? reader.readAsArrayBuffer(file) : reader.readAsText(file, 'utf-8');
         });
         
         function parseASS(content) {
-          return content.split('\n')
-            .filter(line => line.startsWith('Dialogue:') && line.trim() !== '')
-            .map(line => {
-              const parts = line.split(',');
-              return { text: parts.slice(9).join(',').replace(/\\N/g, ' ').replace(/\{.*?\}/g, '') };
-            });
+            return content.split('\n')
+                .filter(line => line.startsWith('Dialogue:') && line.trim() !== '')
+                .map(line => {
+                    const parts = line.split(',');
+                    // 取出字幕內容並清掉 ASS 樣式標籤
+                    const textContent = parts.slice(9).join(',').replace(/\{.*?\}/g, '');
+                    // 根據 ASS 的換行符號 \N 或 \n 來做切割成陣列
+                    const subLines = textContent.split(/\\[Nn]/).map(s => s.trim()).filter(Boolean);
+                    return { text: processSubtitleText(subLines) };
+                });
         }
         
         function parseSRT(content) {
-          return content.replace(/\r/g, '')
-            .split(/\n\n+/)
-            .map(block => {
-              const lines = block.split('\n').filter(l => l.trim());
-              return lines.length >= 3 ? { text: lines.slice(2).join(' ') } : null;
-            })
-            .filter(Boolean);
+            return content.replace(/\r/g, '')
+                .split(/\n\n+/)
+                .map(block => {
+                    const lines = block.split('\n').filter(l => l.trim());
+                    if (lines.length >= 3) {
+                        // SRT 前兩行是序號和時間軸，第三行開始是字幕內容
+                        const subLines = lines.slice(2);
+                        return { text: processSubtitleText(subLines) };
+                    }
+                    return null;
+                })
+                .filter(Boolean);
         }
         
         function parseDOCX(arrayBuffer, callback) {
-          mammoth.convertToHtml({ arrayBuffer }).then(result => {
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = result.value;
-            const subtitles = Array.from(tempDiv.querySelectorAll('p'))
-              .filter(p => p.textContent.trim() !== '')
-              .map(p => ({ text: p.textContent.trim() }));
-            callback(subtitles);
-          }).catch(err => showError(`DOCX解析失败: ${err.message}`));
+            mammoth.convertToHtml({ arrayBuffer }).then(result => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = result.value;
+                const subtitles = Array.from(tempDiv.querySelectorAll('p'))
+                    .filter(p => p.textContent.trim() !== '')
+                    .map(p => ({ text: p.textContent.trim() })); // docx 結構較雜，暫不處理雙語翻轉
+                callback(subtitles);
+            }).catch(err => showError(`DOCX解析失敗: ${err.message}`));
         }
         
         function parseTXT(content) {
-          return content.split('\n')
-            .filter(line => line.trim() !== '')
-            .map(line => ({ text: line.trim() }));
+            return content.split('\n')
+                .filter(line => line.trim() !== '')
+                .map(line => ({ text: line.trim() }));
         }
         
         function displaySubtitles(subtitles) {
-          const container = document.getElementById('subtitles');
-          container.innerHTML = subtitles.map((sub, index) => `
-            <div class="subtitle ${index % 2 ? 'color2' : 'color1'}">${sub.text || '空字幕内容'}</div>
-          `).join('');
+            const container = document.getElementById('subtitles');
+            if (subtitles.length === 0) {
+                container.innerHTML = `<div class="subtitle color2">⚠️ 檔案中沒有找到有效的字幕內容</div>`;
+                return;
+            }
+            container.innerHTML = subtitles.map((sub, index) => `
+                <div class="subtitle ${index % 2 === 0 ? 'color1' : 'color2'}">${sub.text || '空字幕內容'}</div>
+            `).join('');
         }
         
         function showError(message) {
-          const container = document.getElementById('subtitles');
-          container.innerHTML = `<div class="subtitle color2">❌ ${message}</div>`;
+            const container = document.getElementById('subtitles');
+            container.innerHTML = `<div class="subtitle color2">❌ ${message}</div>`;
         }
-    </script>
-</body>
 
-</html>
-<!DOCTYPE html>
-<html lang="zh">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>美化后的笔记功能</title>
-    <style>
-        body {
-          margin: 0;
-          font-family: Arial, sans-serif;
-        }
-        #note-container {
-          position: fixed;
-          bottom: 0;
-          left: 0;
-          width: 100%;
-          background-color: #fff;
-          padding: 0px;
-          box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-        textarea {
-          width:80%;
-          height: 35px;
-          border: 1px solid #ddd;
-          border-radius: 5px;
-          padding: 15px;
-          font-size: 13px;
-          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-          resize: none;
-        }
-        #button-group {
-          display: flex;
-          flex-direction: column;
-          margin-left: 10px;
-        }
-        button {
-          padding: 5px 10px;
-          margin: 5px 0;
-          cursor: pointer;
-          border: none;
-          background-color: #355c7d;
-          color: white;
-          border-radius: 5px;
-          font-size: 14px;
-          transition: background-color 0.3s ease;
-        }
-        button:hover {
-          background-color: #0056b3;
-        }
-    </style>
-</head>
-
-<body>
-    <div id="note-container">
-        <textarea id="note" placeholder="输入笔记..."></textarea>
-        <div id="button-group">
-            <button onclick="copyNote()">复制</button>
-            <button onclick="saveNote()">保存</button>
-        </div>
-    </div>
-
-    <script>
+        // ================= 筆記功能 =================
         async function copyNote() {
-          const note = document.getElementById('note');
-          try {
-            await navigator.clipboard.writeText(note.value);
-            alert('笔记已复制！');
-          } catch (err) {
-            alert('复制失败: ' + err);
-          }
+            const note = document.getElementById('note');
+            if (!note.value.trim()) {
+                alert('筆記是空的！');
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(note.value);
+                alert('筆記已複製！');
+            } catch (err) {
+                alert('複製失敗: ' + err);
+            }
         }
         
         async function saveNote() {
-          const note = document.getElementById('note').value;
-        
-          if ('showSaveFilePicker' in window) {
-            try {
-              const handle = await window.showSaveFilePicker({
-                suggestedName: 'note.txt',
-                types: [{
-                  description: 'Text Files',
-                  accept: { 'text/plain': ['.txt'] }
-                }]
-              });
-        
-              const writable = await handle.createWritable();
-              await writable.write(note);
-              await writable.close();
-              alert('笔记已保存！');
-            } catch (err) {
-              alert('保存失败: ' + err);
+            const note = document.getElementById('note').value;
+            if (!note.trim()) {
+                alert('請先輸入筆記內容！');
+                return;
             }
-          } else {
-            alert('您的浏览器不支持文件系统访问 API，请使用现代浏览器（如 Chrome 或 Edge）。');
-          }
+        
+            if ('showSaveFilePicker' in window) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: 'note.txt',
+                        types: [{
+                            description: 'Text Files',
+                            accept: { 'text/plain': ['.txt'] }
+                        }]
+                    });
+            
+                    const writable = await handle.createWritable();
+                    await writable.write(note);
+                    await writable.close();
+                    alert('筆記已保存！');
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        alert('保存失敗: ' + err);
+                    }
+                }
+            } else {
+                alert('您的瀏覽器不支持文件系統訪問 API，請使用現代瀏覽器（如 Chrome 或 Edge）。');
+            }
         }
     </script>
 </body>
 
 </html>
-
-<style>
-    .file-search-container {
-      display: flex;
-      flex-direction: column; /* Make them stack vertically */
-      gap: 20px; /* Add spacing between the elements */
-      width: auto;
-      max-width: 200px;
-    }
