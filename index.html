@@ -401,13 +401,6 @@
           background: #218838;
           transform: translateY(-1px);
         }
-
-        .csv-btn {
-          background: #27ae60;
-        }
-        .csv-btn:hover {
-          background: #219653;
-        }
         
         .global-status {
           position: fixed;
@@ -445,7 +438,7 @@
           transition: width 0.3s ease;
         }
 
-        /* ==================== 新增：TTS 按鈕樣式與列印樣式 ==================== */
+        /* ==================== TTS 按鈕樣式 ==================== */
         .tts-btn {
           cursor: pointer;
           padding: 2px 6px;
@@ -460,63 +453,95 @@
         }
         .tts-btn:hover { background: #e0e0e0; }
 
+        /* ==================== PDF 列印雙語排版 ==================== */
         @media print {
-          .subtitle { flex-direction: row !important; }
-          .text-box { flex: 1; }
-          .note-area { display: none; } /* 列印時隱藏筆記輸入框 */
-          .header, .button-container, .tts-btn { display: none !important; }
-          main { padding: 0; margin: 0; max-width: 100%; }
+          /* 隱藏不需要列印的介面元素 */
+          .header, .button-container, .text-action-bar, .global-status, .progress-container, .file-info { 
+            display: none !important; 
+          }
+          
+          body { background: #fff; }
+          main { padding: 0 !important; margin: 0; max-width: 100%; }
+
+          .row {
+            margin-bottom: 10px;
+            page-break-inside: avoid; /* 盡量不讓同一塊被切到下一頁 */
+          }
+
+          .subtitle { 
+            flex-direction: column !important; /* 將原本左右排版的字幕和筆記，改為上下排列 */
+            border: 1px solid #ccc !important;
+            box-shadow: none !important;
+            padding: 10px !important;
+            gap: 8px !important;
+          }
+
+          .text-box { 
+            display: flex !important;
+            flex-direction: row !important; /* 讓內部中日文左右並排 */
+            gap: 15px !important;
+            background: transparent !important;
+            padding: 0 !important;
+            min-height: auto !important;
+          }
+
+          .text-box > div {
+            flex: 1; /* 平分左右空間 */
+          }
+
+          .japanese-text {
+            margin: 0 !important;
+            font-size: 14px !important;
+          }
+
+          .chinese-text {
+            margin: 0 !important;
+            padding: 0 !important;
+            border-top: none !important; /* 移除原本在網頁上的虛線 */
+            font-size: 14px !important;
+          }
+
+          .note-area { 
+            display: block !important; 
+            margin-top: 5px;
+            padding-top: 8px;
+            border-top: 1px dashed #ddd; /* 在筆記上方加一條虛線分隔 */
+          }
+          
+          /* 隱藏沒寫內容的筆記框 */
+          .subtitle:not(.has-written-note) .note-area {
+            display: none !important;
+          }
+
+          .note-box {
+            border: none !important;
+            background: #fff !important;
+            color: #e65100 !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            height: auto !important;
+            overflow: visible !important;
+            font-size: 13px !important;
+          }
         }
         
         @media (max-width: 900px) {
-          :root {
-            --header-height: 130px;
-          }
-          .header {
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: center;
-            padding: 12px 16px;
-          }
-          .header-left {
-            width: 100%;
-            margin-bottom: 6px;
-          }
+          :root { --header-height: 130px; }
+          .header { flex-direction: column; align-items: flex-start; justify-content: center; padding: 12px 16px; }
+          .header-left { width: 100%; margin-bottom: 6px; }
           .header-left h1 { font-size: 18px; line-height: 1.2; }
           .header-left p { font-size: 11px; line-height: 1.3; }
-          .file-search-container {
-            width: 100%; justify-content: flex-start; gap: 6px;
-          }
-          .custom-file-upload {
-            padding: 4px 10px; max-width: 130px; font-size: 12px;
-          }
-          .search-box {
-            flex: 1; min-width: 120px; width: auto; font-size: 12px;
-          }
-          .bilingual-btn, .toggle-notes-btn {
-            font-size: 11px; padding: 6px 10px;
-          }
+          .file-search-container { width: 100%; justify-content: flex-start; gap: 6px; }
+          .custom-file-upload { padding: 4px 10px; max-width: 130px; font-size: 12px; }
+          .search-box { flex: 1; min-width: 120px; width: auto; font-size: 12px; }
+          .bilingual-btn, .toggle-notes-btn { font-size: 11px; padding: 6px 10px; }
           main { padding-top: calc(var(--header-height) + 16px); padding-bottom: 180px; }
-          .subtitle {
-            flex-direction: column; gap: 8px; padding: 8px 10px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06); border: 1px solid rgba(0, 0, 0, 0.08);
-          }
-          .text-box {
-            width: 100%; padding: 6px 10px; height: auto; min-height: 34px; font-size: 14px;
-          }
+          .subtitle { flex-direction: column; gap: 8px; padding: 8px 10px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06); border: 1px solid rgba(0, 0, 0, 0.08); }
+          .text-box { width: 100%; padding: 6px 10px; height: auto; min-height: 34px; font-size: 14px; }
           .note-area { width: 100%; flex: none; }
           .note-container { width: 100%; flex: none; }
-          
-          .note-box { 
-            width: 100%; 
-            height: 20px; 
-            max-height: 80px; 
-            overflow-y: auto !important; 
-          }
-          
-          .button-container {
-            bottom: 10px; right: 10px; left: 10px; justify-content: center; gap: 8px;
-          }
+          .note-box { width: 100%; height: 20px; max-height: 80px; overflow-y: auto !important; }
+          .button-container { bottom: 10px; right: 10px; left: 10px; justify-content: center; gap: 8px; }
         }
         
         @media (max-width: 600px) {
@@ -581,7 +606,6 @@
     <div class="button-container">
         <button class="import-btn" id="importBtn">導入筆記</button>
         <button class="export-btn" id="exportBtn" style="display:none;">導出 HTML</button>
-        <button class="export-btn csv-btn" id="exportCsvBtn" style="display:none;">導出 CSV</button>
         <button class="export-btn" id="exportPdfBtn" style="background:#e74c3c;">匯出 PDF</button>
     </div>
 
@@ -604,7 +628,7 @@
         let file1Data = { name: "", subtitles: [] };
         let file2Data = { name: "", subtitles: [] };
         
-        let renderAnimationId = null; // 用於控制分批渲染的 ID
+        let renderAnimationId = null; 
         
         // ==================== 工具函數 ====================
         function escapeHtml(s) {
@@ -654,19 +678,11 @@
         
         function updateNoteCount() {
           noteCount = Object.keys(notesData).length;
-          // 根據筆記數量控制 HTML 匯出按鈕
           if (noteCount > 0) {
             document.getElementById('exportBtn').style.display = 'block';
             showGlobalStatus(`已有 ${noteCount} 條筆記`);
           } else {
             document.getElementById('exportBtn').style.display = 'none';
-          }
-          
-          // 只要有字幕資料，就允許匯出 CSV (不管有沒有筆記)
-          if (processedSubtitles.length > 0) {
-            document.getElementById('exportCsvBtn').style.display = 'block';
-          } else {
-            document.getElementById('exportCsvBtn').style.display = 'none';
           }
         }
         
@@ -674,8 +690,8 @@
         function speakText(text) {
           const msg = new SpeechSynthesisUtterance();
           msg.text = text;
-          msg.lang = 'ja-JP'; // 設定為日文朗讀
-          window.speechSynthesis.cancel(); // 停止目前的朗讀
+          msg.lang = 'ja-JP'; 
+          window.speechSynthesis.cancel(); 
           window.speechSynthesis.speak(msg);
         }
 
@@ -757,7 +773,7 @@
               processedSubtitles = merged;
               allSubtitles = merged;
               updateNoteCount();
-              updateDisplay(); // 改用資料驅動更新畫面
+              updateDisplay();
             }, 100);
           } else if (file1Data.subtitles.length > 0) {
             currentFileName = file1Data.name;
@@ -1108,7 +1124,6 @@
           
           const opacityStyle = isContext ? 'style="opacity: 0.5;"' : '';
           
-          // 建立 TTS 朗讀的純文字內容 (去除 HTML tag 及處理引號避免報錯)
           const rawJpText = (sub.japanese || '').replace(/<[^>]*>/g, '');
           const escapedTtsText = escapeHtml(rawJpText).replace(/'/g, "\\'").replace(/"/g, "&quot;");
           
@@ -1118,8 +1133,7 @@
           return `<div class="row" data-index="${originalIndex}" ${opacityStyle}>
               <div class="subtitle ${hasWrittenClass}">
                 <div class="text-box">
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                     <span></span>
+                  <div class="text-action-bar" style="display:flex; justify-content:flex-end; margin-bottom: 4px;">
                      <span class="tts-btn" onclick="speakText('${escapedTtsText}')">🔊 朗讀</span>
                   </div>
                   ${japaneseHTML} 
@@ -1455,32 +1469,7 @@
           a.click();
         });
 
-        document.getElementById('exportCsvBtn').addEventListener('click', () => {
-          if(processedSubtitles.length === 0) return alert('沒有資料可以匯出');
-          
-          let csvContent = '\uFEFF'; 
-          csvContent += "序號,時間軸,日文字幕,中文字幕,你的筆記\n";
-
-          const escapeCSV = (str) => {
-             if (str === null || str === undefined) return '""';
-             return `"${String(str).replace(/"/g, '""')}"`;
-          };
-
-          processedSubtitles.forEach((sub, idx) => {
-             const note = notesData[idx] || "";
-             const timecode = (sub.startTime && sub.endTime) ? `${sub.startTime} --> ${sub.endTime}` : "無";
-             
-             csvContent += `${idx + 1},${escapeCSV(timecode)},${escapeCSV(sub.japanese)},${escapeCSV(sub.chinese)},${escapeCSV(note)}\n`;
-          });
-
-          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = `${currentFileName.split('.')[0]}_完整報表.csv`;
-          a.click();
-        });
-
-        // ==================== 新增：直接列印為 PDF ====================
+        // ==================== 直接列印為 PDF ====================
         document.getElementById('exportPdfBtn').addEventListener('click', () => {
             window.print();
         });
