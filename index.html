@@ -1,787 +1,823 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-Hans" data-page-node-id="XWhC3id8fcSeNMsraQElw3">
+<head data-page-node-id="b4rFC5XDzoTEIPwSL6AV8E">
+<meta charset="UTF-8" data-page-node-id="plBuqWxqBL3MmfQXR24lgt">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="gLW3K8sYH10oC7hvTFNaNL">
+<title>单词学习卡片模板</title>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:#f4f5f7;color:#24292f;font-family:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei","Noto Sans SC",sans-serif;-webkit-font-smoothing:antialiased}
+header{background:#fff;border-bottom:1px solid #e6e8eb;padding:14px 28px}
+header h1{margin:0;font-size:18px}
+header .sub{margin:4px 0 0;font-size:12.5px;color:#8a9199}
+main{display:flex;gap:22px;padding:22px 28px 60px;max-width:1160px;margin:0 auto;align-items:flex-start}
+.editor{flex:1 1 470px;min-width:400px;background:#fff;border:1px solid #e6e8eb;border-radius:14px;padding:18px 22px 22px}
+.editor h2{font-size:13px;color:#9aa1a8;margin:22px 0 10px;letter-spacing:1px;font-weight:700}
+.editor h2:first-child{margin-top:0}
+.field{margin-bottom:12px}
+label{display:block;font-size:12.5px;color:#6a7178;margin-bottom:5px;font-weight:600}
+input[type=text],input:not([type]),textarea,select{width:100%;border:1px solid #dfe3e8;border-radius:8px;padding:8px 10px;font-size:14px;font-family:inherit;background:#fafbfc;color:#24292f}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#4AA3FF;background:#fff}
+textarea{resize:vertical;min-height:44px}
+.row{display:flex;gap:10px}
+.row .field{flex:1;min-width:0}
+.hint{font-size:12px;color:#9aa1a8;line-height:1.7;margin:8px 0 0}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+button{font-family:inherit;cursor:pointer;border-radius:8px;font-size:13.5px;padding:9px 16px;border:1px solid #dfe3e8;background:#fff;color:#3a4149;transition:all .15s}
+button:hover{border-color:#c8cdd3;background:#fafbfc}
+button.primary{background:#4AA3FF;border-color:#4AA3FF;color:#fff;font-weight:600}
+button.primary:hover{background:#2f93f0;border-color:#2f93f0}
+button:disabled{opacity:.6;cursor:default}
+button.rec{background:#e34d59;border-color:#e34d59;color:#fff;font-weight:600}
+button.rec:hover{background:#d13c48;border-color:#d13c48}
+button.rec.recording{background:#24292f;border-color:#24292f}
+body.recording .editor{pointer-events:none;opacity:.55}
+body.recording .editor .rec-keep{pointer-events:auto}
+.count{color:#c0c6cc;font-weight:400}
+.lib-list{display:flex;flex-direction:column;gap:8px}
+.lib-item{display:flex;gap:8px;align-items:center}
+.lib-load{flex:1;min-width:0;text-align:left;display:flex;gap:10px;align-items:baseline;overflow:hidden}
+.lib-load b{color:#1f6fd0;white-space:nowrap}
+.lib-load span{color:#9aa1a8;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lib-del{padding:6px 11px;color:#c0392b;border-color:#f2dcd8}
+.lib-del:hover{background:#fdf3f1;border-color:#e8b6ae}
+.preview{position:sticky;top:22px;display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:4px}
+.stage{position:relative;border-radius:22px;box-shadow:0 10px 34px rgba(23,33,54,.16);overflow:hidden;background:#131313}
+.preview .hint{text-align:center;max-width:330px}
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>小野字幕君</title>
+/* ===== 卡片（导出区域，540px 宽基准）===== */
+.card{width:540px;background:#131313;border-radius:20px;padding:30px 26px 24px;display:flex;flex-direction:column;transform-origin:top left;color:#fff;overflow:hidden}
+.c-word{font-size:48px;font-weight:800;color:#4AA3FF;text-align:center;line-height:1.12;letter-spacing:.5px;word-break:break-word}
+.badges{display:flex;justify-content:center;gap:12px;margin-top:16px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:7px;background:#1d1d20;border:1px solid #2e2e33;border-radius:9px;padding:5px 11px;font-size:13.5px;color:#eaeaea;cursor:pointer;user-select:none}
+.badge:hover{border-color:#3d3d44}
+.badge .tag{font-weight:700;color:#fff}
+.badge .ph{color:#c9c9c9}
+.badge svg{flex:none}
+.c-meaning{text-align:center;color:#c7c7c7;font-size:15px;margin-top:14px}
+.video-wrap{position:relative;margin-top:18px;border-radius:12px;overflow:hidden;background:#000;flex:none;min-height:0}
+.video-wrap video{width:100%;height:100%;object-fit:cover;display:block;background:#000;cursor:pointer}
+.video-empty{position:absolute;inset:0;display:flex;flex-direction:column;gap:5px;align-items:center;justify-content:center;color:#6f6f6f;font-size:13px;border:1.5px dashed #383838;border-radius:12px;background:#0e0e0e;text-align:center;padding:10px}
+.video-wrap.drag .video-empty{border-color:#4AA3FF;color:#4AA3FF}
+.replay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;border:none;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.replay:hover{background:rgba(0,0,0,.65)}
+.mute{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,.45);color:#fff;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.mute:hover{background:rgba(0,0,0,.65)}
+.c-example{text-align:center;color:#f0f0f0;font-size:17px;line-height:1.55;margin-top:20px;font-weight:500;flex:none}
+.c-example .hl{color:#4AA3FF;font-weight:700}
+.c-translation{text-align:center;color:#9a9a9a;font-size:13.5px;margin-top:9px;flex:none}
+.c-watermark{text-align:right;color:#5f5f5f;font-size:12px;margin-top:16px;flex:none}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-    <style>
-        :root {
-          --header-height: 100px;
-          --accent: #2c3e50;
-          --subtitle-min-height: 30px;
-          --gutter: 12px;
-          --max-width: auto;
-          --container-padding: 15px;
-        }
-        
-        * {
-          box-sizing: border-box;
-        }
-        
-        html, body {
-          height: 100%; margin: 0; padding: 0;
-          font-family: "Arial", "Hiragino Sans", "Meiryo", "Noto Serif CJK JP", sans-serif;
-          background: #f5f5f5; color: #333;
-        }
-        
-        .header {
-          position: fixed; top: 0; left: 0; right: 0; height: var(--header-height);
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 12px 18px; background: rgba(44, 62, 80, 0.95); color: #fff;
-          z-index: 999; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
-        }
-        
-        .header-left { display: flex; flex-direction: column; gap: 4px; }
-        .header-left h1 { margin: 0; font-size: 24px; }
-        .header-left p { margin: 0; font-size: 12px; opacity: 0.9; }
-        
-        .file-search-container { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-        .file-buttons-wrapper { display: flex; gap: 12px; }
-        .file-item { display: flex; align-items: center; gap: 6px; }
-
-        .custom-file-upload {
-          display: flex; align-items: center; gap: 6px; padding: 6px 14px;
-          background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3);
-          border-radius: 20px; cursor: pointer; font-size: 13px; color: #fff;
-          transition: all 0.2s ease; max-width: 160px; user-select: none;
-        }
-        .custom-file-upload:hover { background: rgba(255, 255, 255, 0.25); transform: translateY(-1px); }
-        .custom-file-upload input[type="file"] { display: none; }
-        .file-name-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .file-icon { font-size: 14px; }
-        .custom-file-upload.has-file { background: rgba(46, 204, 113, 0.2); border-color: #2ecc71; color: #e8f8f5; }
-
-        .clear-btn {
-          display: none; cursor: pointer; color: #ff5252; font-size: 20px;
-          font-weight: bold; padding: 0 4px; user-select: none; transition: transform 0.2s ease;
-        }
-        .clear-btn:hover { transform: scale(1.2); }
-        
-        .action-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .search-box {
-          padding: 6px 12px; border-radius: 20px; border: 1px solid #ddd; background: #fff;
-          font-size: 13px; width: 180px; transition: all 0.2s ease;
-        }
-        .search-box:focus { outline: none; border-color: #3498db; box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2); }
-        
-        .bilingual-btn, .toggle-notes-btn {
-          background: #9b59b6; color: white; border: none; padding: 6px 14px;
-          border-radius: 20px; cursor: pointer; font-size: 13px; transition: all 0.2s ease;
-        }
-        .toggle-notes-btn { background: #3498db; }
-        body.hide-notes .note-area { display: none !important; }
-        
-        main { padding: calc(var(--header-height) + 12px) var(--container-padding) 140px; max-width: var(--max-width); margin: 0 auto; }
-        #subtitles { display: block; }
-        
-        .row { display: block; margin: 3px 0; transition: opacity 0.2s ease; }
-        .subtitle {
-          background: #fff; padding: 8px 12px; border-radius: 8px;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); word-break: break-word; font-size: 15px;
-          min-height: var(--subtitle-min-height); display: flex; flex-direction: row;
-          align-items: stretch; gap: var(--gutter); border: 1px solid rgba(0, 0, 0, 0.05);
-          position: relative;
-        }
-        .subtitle:hover { box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12); }
-        .subtitle.has-written-note { border-left: 4px solid #ff9800; }
-        
-        .text-box {
-          flex: 1; min-height: 35px; padding: 8px 12px; border-radius: 6px;
-          background: #f9f9f9; font-size: 15px; line-height: 1.4; color: #222;
-          white-space: pre-wrap; display: flex; flex-direction: column; cursor: text;
-          position: relative;
-          padding-right: 40px; 
-        }
-        .japanese-text { font-family: "Hiragino Sans", "Meiryo", sans-serif; font-size: 16px; color: #2c3e50; margin-bottom: 4px; }
-        .chinese-text { font-family: "Arial", "Microsoft YaHei", sans-serif; font-size: 15px; color: #666; border-top: 1px dashed #eee; padding-top: 4px; margin-top: 4px; }
-        .single-language .chinese-text { display: none; }
-        .single-language .japanese-text { margin-bottom: 0; border: none; }
-
-        .row-actions {
-          position: absolute; right: 8px; top: 8px; display: flex; gap: 4px;
-          opacity: 0; transition: opacity 0.2s ease; z-index: 10;
-        }
-        .text-box:hover .row-actions { opacity: 1; }
-        .action-btn {
-          background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 6px;
-          cursor: pointer; font-size: 13px; color: #475569; transition: all 0.2s; font-weight: bold;
-        }
-        .action-btn:hover { background: #e2e8f0; color: #0f172a; }
-        
-        .note-area { display: flex; flex-direction: row; gap: 8px; flex: 1; }
-        .note-container { flex: 1; display: flex; align-items: stretch; }
-        .note-box {
-          width: 100%; min-height: 34px; max-height: 150px; padding: 8px 12px; border-radius: 6px;
-          border: 1px solid #ddd; background: #fff; font-size: 13px; line-height: 1.4; color: #333;
-          resize: none; font-family: inherit; transition: all 0.2s ease; overflow-y: hidden;
-          display: block;
-        }
-        .note-box.has-content { border-color: #ff9800; background: #fff8e1; color: #e65100; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .note-box:focus { outline: none; border-color: #4CAF50; background: #fff; box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2); }
-        
-        .file-info { position: fixed; bottom: 20px; right: 20px; background: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 6px; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 100; border: 1px solid #ddd; max-width: 300px; }
-        .highlight { background: #ffff00; color: #d32f2f; font-weight: 700; padding: 0 2px; border-radius: 2px; }
-        
-        .button-container { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000; align-items: flex-end; }
-        .import-btn { background: #28a745; color: white; border: none; padding: 10px 18px; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-        .import-btn:hover { background: #218838; transform: translateY(-2px); }
-
-        .export-dropdown { position: relative; display: none; }
-        .main-export-btn { background: #2c3e50; color: white; border: none; padding: 10px 18px; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-        .main-export-btn:hover { background: #1a252f; transform: translateY(-2px); }
-        .dropdown-content { display: none; position: absolute; bottom: calc(100% + 10px); right: 0; background: #fff; min-width: 170px; box-shadow: 0 6px 16px rgba(0,0,0,0.15); border-radius: 10px; overflow: hidden; animation: slideUp 0.2s ease; border: 1px solid #eee; }
-        .dropdown-content.show { display: block; }
-        .dropdown-content button { color: #444; padding: 12px 16px; display: block; width: 100%; text-align: left; border: none; background: none; cursor: pointer; font-size: 14px; transition: background 0.2s; border-bottom: 1px solid #f0f0f0; }
-        .dropdown-content button:hover { background: #f8f9fa; color: #000; }
-        .dropdown-content button.pdf-btn { color: #e74c3c; font-weight: bold; }
-        .dropdown-content button.pdf-notes-btn { color: #e67e22; font-weight: bold; }
-        .dropdown-content button.html-btn { color: #2980b9; }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .global-status { position: fixed; top: calc(var(--header-height) + 10px); right: 18px; background: rgba(255, 255, 255, 0.98); border-radius: 6px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); padding: 6px 10px; font-size: 12px; color: #333; z-index: 1000; display: none; }
-        .global-status.show { display: block; }
-        
-        .progress-container { position: fixed; top: var(--header-height); left: 0; right: 0; height: 4px; background: #f0f0f0; z-index: 999; display: none; }
-        .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s ease; }
-
-        @media (max-width: 900px) {
-          :root { --header-height: 130px; }
-          .header { flex-direction: column; align-items: flex-start; justify-content: center; padding: 12px 16px; }
-          .header-left { width: 100%; margin-bottom: 6px; }
-          .header-left h1 { font-size: 18px; line-height: 1.2; }
-          .header-left p { font-size: 11px; line-height: 1.3; }
-          .file-search-container { width: 100%; justify-content: flex-start; gap: 6px; }
-          .custom-file-upload { padding: 4px 10px; max-width: 130px; font-size: 12px; }
-          .search-box { flex: 1; min-width: 120px; width: auto; font-size: 12px; }
-          .bilingual-btn, .toggle-notes-btn { font-size: 11px; padding: 6px 10px; }
-          main { padding-top: calc(var(--header-height) + 16px); padding-bottom: 180px; }
-          .subtitle { flex-direction: column; gap: 8px; padding: 8px 10px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06); border: 1px solid rgba(0, 0, 0, 0.08); }
-          .text-box { width: 100%; padding: 6px 10px; padding-right: 40px; height: auto; min-height: 34px; font-size: 16px; }
-          .note-area { width: 100%; flex: none; }
-          .note-container { width: 100%; flex: none; }
-          .note-box { width: 100%; height: 20px; max-height: 80px; overflow-y: auto !important; }
-          .row-actions { opacity: 1; }
-        }
-        
-        @media (max-width: 600px) {
-          :root { --header-height: 160px; }
-          .file-search-container { flex-direction: row; gap: 6px; }
-          .file-buttons-wrapper { width: 100%; flex: none; gap: 6px; }
-          .file-item { width: calc(50% - 3px); justify-content: space-between; }
-          .custom-file-upload { flex: 1; max-width: none; justify-content: center; padding: 6px; }
-          .file-name-text { font-size: 11px; max-width: 70px; }
-          .clear-btn { font-size: 18px; }
-          .action-group { width: 100%; flex-wrap: wrap; gap: 6px; }
-          .search-box { width: 100%; flex: none; }
-          .bilingual-btn, .toggle-notes-btn { flex: 1; padding: 6px 4px; text-align: center; }
-          main { padding-top: calc(var(--header-height) + 12px); }
-        }
-    </style>
+.toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,16px);background:#24292f;color:#fff;font-size:13.5px;padding:10px 18px;border-radius:10px;opacity:0;pointer-events:none;transition:all .25s;z-index:99;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (max-width:900px){
+  main{flex-direction:column;padding:16px}
+  .editor{min-width:0;width:100%}
+  .preview{position:static;width:100%}
+}
+</style>
 </head>
+<body data-page-node-id="4v3sGmngAoSj8XwUEhCqD6">
 
-<body>
-    <header class="header" role="banner">
-        <div class="header-left">
-            <h1>小野字幕君</h1>
-            <p>支援：.srt / .ass / .docx / .txt / .pdf / .epub</p>
-        </div>
-        <div class="file-search-container" role="region" aria-label="檔案與搜尋">
-            
-            <div class="file-buttons-wrapper">
-              <div class="file-item">
-                  <label class="custom-file-upload" id="labelFile1">
-                      <input id="fileInput1" type="file" accept=".ass,.srt,.docx,.txt,.pdf,.epub" />
-                      <span class="file-icon">📁</span>
-                      <span class="file-name-text" id="textFile1">選擇檔案 1</span>
-                  </label>
-                  <span class="clear-btn" id="clearBtn1" title="移除檔案1">×</span>
-              </div>
-              <div class="file-item">
-                  <label class="custom-file-upload" id="labelFile2">
-                      <input id="fileInput2" type="file" accept=".ass,.srt,.docx,.txt,.pdf,.epub" />
-                      <span class="file-icon">📁</span>
-                      <span class="file-name-text" id="textFile2">選擇檔案 2</span>
-                  </label>
-                  <span class="clear-btn" id="clearBtn2" title="移除檔案2">×</span>
-              </div>
-            </div>
+<header data-page-node-id="M16d372UPFggBabJB6QD08">
+  <h1 data-page-node-id="bQw3moik1nF3smipnJjm3l">单词学习卡片模板</h1>
+  <p class="sub" data-page-node-id="FUR1ykZjYTPar1EGIQTQId">左边填单词内容 → 拖入视频 → 右边实时出卡 → 导出 PNG 图片卡 / 录制 MP4 视频卡，全程不用剪辑视频</p>
+</header>
 
-            <div class="action-group">
-                <input id="searchBox" class="search-box" type="text" placeholder="搜尋關鍵字" />
-                <button id="toggleNotesBtn" class="toggle-notes-btn">隱藏筆記</button>
-                <button id="bilingualBtn" class="bilingual-btn">單語顯示</button>
-            </div>
-        </div>
-    </header>
-
-    <div class="progress-container" id="progressContainer">
-        <div class="progress-bar" id="progressBar"></div>
+<main data-page-node-id="oCSP5y9KVb16Mvm0MwEBgv">
+  <!-- ================= 左侧编辑面板 ================= -->
+  <section class="editor" data-page-node-id="4YwacizWIBDwhaQ71fgrNd">
+    <h2 data-page-node-id="KaUNwWKeytWDP9NcvFrS3a">① 单词内容</h2>
+    <div class="field" data-page-node-id="hfgZKja2N0bOgEx79x4NWG">
+      <label data-page-node-id="l85FWv5oO5gv3WiJGwaJQI">单词 Word</label>
+      <input type="text" id="f-word" placeholder="despite" autocomplete="off" data-page-node-id="Z8ddLvoc1fCkiNW4J52bNy">
+    </div>
+    <div class="row" data-page-node-id="7icEYOKCD3QDD5xXyonxPi">
+      <div class="field" data-page-node-id="1ygId6sm1DnssItcGpAFiz">
+        <label data-page-node-id="OrlAqnef2UMw9peKC5ze8c">英式发音（显示用）</label>
+        <input type="text" id="f-uk" placeholder="/drɪˈspaɪt/" autocomplete="off" data-page-node-id="yGMnApyTisRyNAELJKiPP8">
+      </div>
+      <div class="field" data-page-node-id="Bf43dx1H5EELHDl6JRYYN4">
+        <label data-page-node-id="mDLiSCx0QdGOaE8N0dlxc6">美式发音（显示用）</label>
+        <input type="text" id="f-us" placeholder="/drɪˈspaɪt/" autocomplete="off" data-page-node-id="FHopjT3tOI46vHkMUTKnJu">
+      </div>
+    </div>
+    <div class="row" data-page-node-id="N0La7NMHyFgbRO30rJm9ko">
+      <div class="field" data-page-node-id="AvDwrvkHpSDSOfAXAPlsdf">
+        <label data-page-node-id="w1ZtfmOw9gonaWpID3krUM">词性</label>
+        <input type="text" id="f-pos" placeholder="prep." autocomplete="off" data-page-node-id="PW6PSae4U8mqwbkdINdhwc">
+      </div>
+      <div class="field" data-page-node-id="V7FuPVX1bq3YRCd804rq2e">
+        <label data-page-node-id="8VKKoECL78RJSGCCoafDvE">中文释义</label>
+        <input type="text" id="f-meaning" placeholder="尽管，不管" autocomplete="off" data-page-node-id="KN37XGv5bvMClnyhWqxDCd">
+      </div>
     </div>
 
-    <div class="global-status" id="globalStatus"></div>
-    <div class="file-info" id="fileInfo" style="display:none;"></div>
-
-    <div class="button-container">
-        <button class="import-btn" id="importBtn">導入筆記</button>
-        
-        <div class="export-dropdown" id="exportDropdownContainer">
-            <button class="main-export-btn" id="mainExportBtn">匯出檔案 ▴</button>
-            <div class="dropdown-content" id="exportMenu">
-                <button class="html-btn" id="exportBtn" style="display:none;">📄 HTML (筆記備份)</button>
-                <button class="pdf-notes-btn" id="exportPdfNotesBtn" style="display:none;">📝 PDF (僅筆記)</button>
-                <button class="pdf-btn" id="exportPdfBtn">📕 PDF (全文)</button>
-            </div>
-        </div>
+    <h2 data-page-node-id="M2dSugpFekIVfqBscBzpV7">② 例句（卡片里的单词会自动蓝色高亮）</h2>
+    <div class="field" data-page-node-id="IL0d7eVhEOClzzPjdaziwu">
+      <textarea id="f-sentence" rows="2" placeholder="who, despite his young age, is remarkably gifted."></textarea>
+    </div>
+    <div class="field" data-page-node-id="YOZT1M6Fm4Ob6EH7pkNlgE">
+      <label data-page-node-id="Xljg0qevkuFc9hoXAkTftJ">例句翻译</label>
+      <input type="text" id="f-translation" placeholder="虽然年纪还小，但天赋异禀。" autocomplete="off" data-page-node-id="06ufvf1CbgUcuLNOF4N1xT">
     </div>
 
-    <input type="file" id="importFileInput" accept=".html" style="display:none" />
+    <h2 data-page-node-id="5uQqYymBY2pdAmZq7G5Xwg">③ 视频</h2>
+    <div class="field" data-page-node-id="xSBuI1E5AhVofSSFuHAXgc">
+      <label data-page-node-id="hrlg0FlX9r0MD9U7nU9PYZ">视频链接 URL（可选）</label>
+      <input type="text" id="f-url" placeholder="https://example.com/clip.mp4" autocomplete="off" data-page-node-id="Sa9fBu4ymveLpHedqhAmFt">
+    </div>
+    <div class="field" data-page-node-id="ITSvENkHxzmZVLVhMgLoWC">
+      <label data-page-node-id="IX2yVmDZpI7TMEJYwMc910">或选择本地视频文件</label>
+      <input type="file" id="f-file" accept="video/*" data-page-node-id="IE2OZKQr53CdqYhYPMQBcC">
+    </div>
+    <p class="hint" data-page-node-id="i1xtyWTG5DHAlHGExk701H">💡 也可以直接把视频文件拖放到右边卡片的视频区域。本地文件只存在于当前网页会话，刷新后需重新选择。部分网站的视频不允许跨域读取，导出时视频画面可能无法嵌入——遇到这种情况请把视频保存到本地，再拖放到卡片区域。</p>
 
-    <main>
-        <div id="subtitles" aria-live="polite"></div>
-        <div id="scrollSentinel" style="height: 20px; width: 100%;"></div>
-    </main>
+    <div id="rec-block" data-page-node-id="recBlk0001">
+      <div class="row" data-page-node-id="recRow0001">
+        <div class="field" data-page-node-id="recDur0001">
+          <label data-page-node-id="recDurLbl01">录制时长</label>
+          <select id="f-duration" data-page-node-id="recDurSel01">
+            <option value="5" data-page-node-id="recDurO5a01">5 秒</option>
+            <option value="10" selected data-page-node-id="recDurO10a">10 秒</option>
+            <option value="15" data-page-node-id="recDurO15a">15 秒</option>
+            <option value="video" data-page-node-id="recDurOvd1">跟随视频时长</option>
+          </select>
+        </div>
+        <div class="field" data-page-node-id="recBtnFld01">
+          <label data-page-node-id="recBtnLbl01">导出动态视频</label>
+          <button id="btn-record" class="rec rec-keep" data-page-node-id="recBtn00001">● 录制卡片视频</button>
+        </div>
+      </div>
+      <p class="hint" data-page-node-id="recHint0001">🎬 PNG 是静态图（只取视频一帧）；「录制卡片视频」会把文字卡 + 实时播放的视频 + 原声一起录成 MP4，可直接上传小红书视频帖，同样不用剪辑。录制时长可选，也可选「跟随视频时长」。</p>
+    </div>
 
-    <script>
-        // ==================== 核心狀態 ====================
-        const AppState = {
-            currentFileName: "",
-            allSubtitles: [],
-            processedSubtitles: [],
-            filteredData: [], 
-            notesData: {},
-            noteCount: 0,
-            bilingualEnabled: true,
-            notesVisible: true,
-            renderedCount: 0, // 無限滾動的計數器
-            currentUtterance: null
-        };
-        
-        let file1Data = { name: "", subtitles: [] };
-        let file2Data = { name: "", subtitles: [] };
-        
-        // ==================== 工具函數 ====================
-        const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const getSafeFileName = () => AppState.currentFileName.replace(/\.[^/.]+$/, "");
-        
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => { clearTimeout(timeout); func(...args); };
-                clearTimeout(timeout); timeout = setTimeout(later, wait);
-            };
+    <h2 data-page-node-id="v7gYCiLubF56vODNp8MMJb">④ 版面</h2>
+    <div class="row" data-page-node-id="hFFTExEZWEf93yTbHDTdAQ">
+      <div class="field" data-page-node-id="76Xjwc6TxD94z2DKL5XTsh">
+        <label data-page-node-id="g5sJ7TPvSaPv5kwl26e2gw">卡片比例</label>
+        <select id="f-ratio" data-page-node-id="sVNNsOACLRHrd4a6R1U3pa">
+          <option value="3:4" data-page-node-id="Kt484emLjy06udUqpmCWUT">3 : 4（推荐，小红书常用）</option>
+          <option value="1:1" data-page-node-id="kPHjNjmwKv6jOkY6rFHuIh">1 : 1 方形</option>
+          <option value="9:16" data-page-node-id="BXYcXIH2C81RkghTiv3dS2">9 : 16 全屏</option>
+        </select>
+      </div>
+      <div class="field" data-page-node-id="D2ktSEofGLpQOhz6QZpmZS">
+        <label data-page-node-id="eNHFFEMdpNuVzy3Al2qp8o">署名 / 水印（可选）</label>
+        <input type="text" id="f-watermark" placeholder="@你的小红书号" autocomplete="off" data-page-node-id="19pvPZzkcVOU62NGc760bf">
+      </div>
+    </div>
+    <p class="hint" data-page-node-id="ratioHint01">📐 无论选择哪种卡片比例，视频区域始终保持 16:9 高清比例，不会拉伸变形；卡片越高，视频上下的留白会越均匀。</p>
+
+    <div class="btns" data-page-node-id="gSvwXwuDMuEzi2pS5I1BJG">
+      <button class="primary" id="btn-export" data-page-node-id="dfUdynPL9qktXGlmAKf9Ei">导出 PNG</button>
+      <button id="btn-copy" data-page-node-id="UFyvntVcDaxI7DkIv3Cafe">复制到剪贴板</button>
+      <button id="btn-save" data-page-node-id="xKYBzt59eeWAFQTFe60xOM">保存词条</button>
+      <button id="btn-reset" data-page-node-id="nldDWnLsmrpwGdJWzmp98F">重置示例</button>
+    </div>
+
+    <h2 data-page-node-id="B8gmyGH2HQRiLcSpG1YdQs">⑤ 词条库 <span id="lib-count" class="count" data-page-node-id="NjQnQaaIMbUEihBe23je7X"></span></h2>
+    <div id="lib-list" class="lib-list" data-page-node-id="tYOl1DhF5fxvWFgEJQtROg"><p class="hint" data-page-node-id="Ot7dZ4hJGFcb6oSelLDkLB">尚未保存任何词条。做好一张卡后点「保存词条」，下次一键换词。</p></div>
+  </section>
+
+  <!-- ================= 右侧卡片预览 ================= -->
+  <section class="preview" data-page-node-id="Pqd8sVzA6vyJRIBo54Kx9L">
+    <div class="stage" id="stage" data-page-node-id="Yv6JmSYLxPmxtod6gM9J1a">
+      <div class="card" id="card" data-page-node-id="DfIkwjJ1iD6K41u67TRww0">
+        <div class="c-word" id="c-word" data-page-node-id="TgIOFiLjOgkWYT8jUHFXVP">despite</div>
+        <div class="badges" data-page-node-id="Uyjm0V0M6A4SezD9GneYzO">
+          <span class="badge" id="badge-uk" title="点击朗读（英式）" data-page-node-id="OAJsACuf1JQfcamKFHYBFw">英<span class="ph" id="c-uk" data-page-node-id="bXWvFWCWK3cQM1tNG7SeTe">/drɪˈspaɪt/</span>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#4AA3FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="4YBOGyqPnSfWMAhl11U1Js"><path d="M11 5 6 9H3v6h3l5 4V5z" data-page-node-id="Ky58lBIoCHFBFhtpHe3QG0"/><path d="M15.5 9.5a4 4 0 0 1 0 5" data-page-node-id="LISbXudGgrGTOOXAQWeYGR"/><path d="M18.5 7a8 8 0 0 1 0 10" data-page-node-id="LXp36zTNk9FmVHL4AEfvln"/></svg>
+          </span>
+          <span class="badge" id="badge-us" title="点击朗读（美式）" data-page-node-id="tnitNW8dsTzNA9J82hnlUn">美<span class="ph" id="c-us" data-page-node-id="IdVxdnQAG37YLjfgWbBVmq">/drɪˈspaɪt/</span>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#4AA3FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="uV63W85C2RHDec3yXcIk2G"><path d="M11 5 6 9H3v6h3l5 4V5z" data-page-node-id="wpecqFBCCAEnK65BD9o1Lj"/><path d="M15.5 9.5a4 4 0 0 1 0 5" data-page-node-id="20deerErIO9qFwSRBD1duP"/><path d="M18.5 7a8 8 0 0 1 0 10" data-page-node-id="RmakXUTAWx0nILqMryM8FJ"/></svg>
+          </span>
+        </div>
+        <div class="c-meaning" id="c-meaning" data-page-node-id="fQ3T2a8PACAzVvToIXgzqb">prep. 尽管，不管</div>
+        <div class="video-wrap" id="video-wrap" data-page-node-id="0W4VRuaA8l9pFVbw3iR1e5">
+          <video id="c-video" playsinline muted loop preload="auto" data-page-node-id="Rr9q8GtWalwiybUkT7hPBB"></video>
+          <div class="video-empty" id="video-empty" data-page-node-id="x8UqJAlMUHspVElZiuWcMT">
+            <span data-page-node-id="TVP5QQ1q8aLfDDokgCkvvo">把视频文件拖放到这里</span>
+            <span data-page-node-id="RGgXPkS9Lb3AJrjpsviKwC">或在左侧选择本地视频 / 填入视频链接</span>
+          </div>
+          <button class="replay" id="btn-replay" title="重播" data-page-node-id="aX6sqGzs4wbGg9kk4AaZ3x">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="zKHMdE7Hx2SpyMcB4ewr0U"><polyline points="1 4 1 10 7 10" data-page-node-id="TFrLaXAmwpGdpmA24d2GTX"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" data-page-node-id="2aDCa3BMKpc877QouqvNYA"/></svg>
+          </button>
+          <button class="mute no-export" id="btn-mute" title="开 / 关声音" data-page-node-id="NguP83XPgBaO0eAjMH4Ls8">🔇</button>
+        </div>
+        <div class="c-example" id="c-example" data-page-node-id="Op1dweAAopfuH7HXo3BtBk"></div>
+        <div class="c-translation" id="c-translation" data-page-node-id="I0uCNL6p3jdA3AAoDrAtU5"></div>
+        <div class="c-watermark" id="c-watermark" data-page-node-id="1mqfYxJkXAtCkHBQUqsHpr"></div>
+      </div>
+    </div>
+    <p class="hint" data-page-node-id="cT0XcFGJJieEAEZkiUTfCj">左边修改内容，卡片即时更新。点发音条可以朗读单词。「导出 PNG」得静态图片卡（1080px 宽）；「录制卡片视频」得会动的 MP4。</p>
+  </section>
+</main>
+
+<div id="toast" class="toast" data-page-node-id="xSQ9wRTCRwn3FIKEgddMwL"></div>
+
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var LS_CUR='wct.current.v1', LS_LIB='wct.lib.v1';
+var STAGE_W=330, EXPORT_SCALE=2;
+var RATIOS={'3:4':720,'1:1':540,'9:16':960};
+var DEMO={word:'despite',uk:"/drɪˈspaɪt/",us:"/drɪˈspaɪt/",pos:'prep.',meaning:'尽管，不管',sentence:'who, despite his young age, is remarkably gifted.',translation:'虽然年纪还小，但天赋异禀。',url:'',watermark:'',ratio:'3:4'};
+var state=Object.assign({},DEMO);
+var videoURL='';
+
+/* ---------- 工具 ---------- */
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function escRe(s){return String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+function highlightHTML(sentence,word){
+  var s=String(sentence||''),w=String(word||'').trim();
+  if(!w){return esc(s).replace(/\n/g,'<br>');}
+  var re;
+  try{re=new RegExp(escRe(w),'gi');}catch(e){return esc(s).replace(/\n/g,'<br>');}
+  var out='',last=0,m;
+  while((m=re.exec(s))!==null){
+    if(m[0].length===0){re.lastIndex++;continue;}
+    out+=esc(s.slice(last,m.index))+'<span class="hl">'+esc(m[0])+'</span>';
+    last=m.index+m[0].length;
+  }
+  out+=esc(s.slice(last));
+  return out.replace(/\n/g,'<br>');
+}
+var toastTimer=null;
+function toast(msg,ms){
+  var t=$('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.classList.remove('show');},ms||2200);
+}
+function saveCurrent(){try{localStorage.setItem(LS_CUR,JSON.stringify(state));}catch(e){}}
+
+/* ---------- 渲染 ---------- */
+function render(){
+  var w=(state.word||'').trim();
+  $('c-word').textContent=w||'word';
+  var len=w.length,fs=48;
+  if(len>10)fs=42;
+  if(len>14)fs=34;
+  if(len>18)fs=27;
+  $('c-word').style.fontSize=fs+'px';
+  $('c-uk').textContent=state.uk||'';
+  $('c-us').textContent=state.us||'';
+  $('c-meaning').textContent=((state.pos||'')+(state.meaning?' '+state.meaning:'')).trim()||'—';
+  var ex=highlightHTML(state.sentence,w);
+  $('c-example').innerHTML=ex?ex:'<span style="color:#555">例句</span>';
+  $('c-translation').textContent=state.translation||'';
+  $('c-watermark').textContent=state.watermark||'';
+  layout();
+  saveCurrent();
+}
+function layout(){
+  var h=RATIOS[state.ratio]||720;
+  var card=$('card');
+  card.style.height=h+'px';
+  var k=STAGE_W/540;
+  $('stage').style.width=STAGE_W+'px';
+  $('stage').style.height=Math.round(h*k)+'px';
+  card.style.transform='scale('+k+')';
+  layoutVideo();
+}
+/* 视频区恒为 16:9 高清比例：宽度取「内容宽」与「可用高度×16/9」的较小值，
+   剩余空间平分成视频上/下两段额外间距，使卡片在各种比例下都被均匀填满 */
+function layoutVideo(){
+  var card=$('card'),wrap=$('video-wrap'),ex=$('c-example');
+  var H=parseFloat(card.style.height)||720;
+  var contentW=540-52; /* 卡片左右 padding 26×2 */
+  var others=0,i,kids=card.children;
+  for(i=0;i<kids.length;i++){
+    if(kids[i]===wrap)continue;
+    others+=kids[i].offsetHeight;
+  }
+  /* 已知固定间距：badges 16 + meaning 14 + example 20 + translation 9 + watermark 16 + 视频自带 18 */
+  var fixedGaps=16+14+20+9+16+18;
+  var avail=H-54-others-fixedGaps; /* 54 = 卡片上下 padding 30+24 */
+  var videoW=Math.min(contentW,avail*16/9);
+  if(videoW<240){videoW=240;}
+  var videoH=videoW*9/16;
+  var leftover=Math.max(0,avail-videoH);
+  wrap.style.flex='none';
+  wrap.style.width=videoW+'px';
+  wrap.style.height=videoH+'px';
+  wrap.style.marginTop=(18+leftover/2)+'px';
+  wrap.style.marginBottom='0px';
+  wrap.style.marginLeft='auto';
+  wrap.style.marginRight='auto';
+  ex.style.marginTop=(20+leftover/2)+'px';
+}
+function fillForm(){
+  $('f-word').value=state.word||'';
+  $('f-uk').value=state.uk||'';
+  $('f-us').value=state.us||'';
+  $('f-pos').value=state.pos||'';
+  $('f-meaning').value=state.meaning||'';
+  $('f-sentence').value=state.sentence||'';
+  $('f-translation').value=state.translation||'';
+  $('f-url').value=state.url||'';
+  $('f-watermark').value=state.watermark||'';
+  $('f-ratio').value=state.ratio||'3:4';
+}
+
+/* ---------- 视频 ---------- */
+function setVideo(url){
+  var v=$('c-video');
+  if(!url){
+    if(videoURL&&videoURL.indexOf('blob:')===0){try{URL.revokeObjectURL(videoURL);}catch(e){}}
+    videoURL='';
+    v.onerror=null;
+    v.removeAttribute('src');
+    try{v.load();}catch(e){}
+    $('video-empty').style.display='flex';
+    $('btn-replay').style.display='none';
+    return;
+  }
+  videoURL=url;
+  $('video-empty').style.display='none';
+  $('btn-replay').style.display='flex';
+  loadVideoSrc(url,/^https?:/i.test(url));
+  var p=v.play();
+  if(p&&p.catch){p.catch(function(){});}
+}
+/* tryCORS: 远程地址先用 anonymous 模式加载（成功则导出时可读取视频帧）；
+   若服务器不支持跨域，则退回普通模式（仍可播放，但导出无法嵌入视频帧） */
+function loadVideoSrc(url,tryCORS){
+  var v=$('c-video');
+  v.onerror=null;
+  if(tryCORS){v.crossOrigin='anonymous';}else{v.removeAttribute('crossOrigin');}
+  v.src=url;
+  try{v.load();}catch(e){}
+  if(tryCORS){
+    v.onerror=function(){
+      loadVideoSrc(url,false);
+    };
+  }
+}
+$('btn-replay').addEventListener('click',function(e){
+  e.stopPropagation();
+  if(!videoURL)return;
+  var v=$('c-video');
+  v.currentTime=0;
+  var p=v.play();
+  if(p&&p.catch){p.catch(function(){});}
+});
+$('c-video').addEventListener('click',function(){
+  if(!videoURL)return;
+  if(this.paused){
+    var p=this.play();
+    if(p&&p.catch){p.catch(function(){});}
+  }else{this.pause();}
+});
+$('btn-mute').addEventListener('click',function(e){
+  e.stopPropagation();
+  var v=$('c-video');
+  v.muted=!v.muted;
+  this.textContent=v.muted?'🔇':'🔊';
+});
+var vw=$('video-wrap');
+['dragenter','dragover'].forEach(function(t){
+  vw.addEventListener(t,function(e){e.preventDefault();vw.classList.add('drag');});
+});
+['dragleave','drop'].forEach(function(t){
+  vw.addEventListener(t,function(e){e.preventDefault();vw.classList.remove('drag');});
+});
+vw.addEventListener('drop',function(e){
+  e.preventDefault();
+  var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
+  if(!f)return;
+  if(!/^video\//.test(f.type)){toast('请拖入视频文件');return;}
+  state.url='';
+  $('f-url').value='';
+  setVideo(URL.createObjectURL(f));
+  saveCurrent();
+});
+$('f-file').addEventListener('change',function(){
+  var f=this.files&&this.files[0];
+  if(!f)return;
+  state.url='';
+  $('f-url').value='';
+  setVideo(URL.createObjectURL(f));
+  saveCurrent();
+});
+
+/* ---------- 朗读 ---------- */
+function speak(text,lang){
+  if(!('speechSynthesis' in window)||!text)return;
+  window.speechSynthesis.cancel();
+  var u=new SpeechSynthesisUtterance(text);
+  u.lang=lang;
+  u.rate=0.9;
+  var vs=window.speechSynthesis.getVoices().filter(function(v){return v.lang&&v.lang.indexOf(lang.split('-')[0])===0;});
+  if(vs.length){u.voice=vs[0];}
+  window.speechSynthesis.speak(u);
+}
+$('badge-uk').addEventListener('click',function(){speak(state.word,'en-GB');});
+$('badge-us').addEventListener('click',function(){speak(state.word,'en-US');});
+
+/* ---------- 表单绑定 ---------- */
+[['f-word','word'],['f-uk','uk'],['f-us','us'],['f-pos','pos'],['f-meaning','meaning'],['f-sentence','sentence'],['f-translation','translation'],['f-watermark','watermark']].forEach(function(p){
+  $(p[0]).addEventListener('input',function(){state[p[1]]=this.value;render();});
+});
+$('f-url').addEventListener('input',function(){state.url=this.value.trim();});
+$('f-url').addEventListener('change',function(){state.url=this.value.trim();setVideo(state.url);saveCurrent();});
+$('f-ratio').addEventListener('change',function(){state.ratio=this.value;render();});
+
+/* ---------- 导出 ---------- */
+/* 返回 {url, tainted}；本地文件正常返回帧，跨域视频返回 tainted:true */
+function snapshotVideo(){
+  var v=$('c-video'),wrap=$('video-wrap');
+  if(!videoURL||!v.videoWidth||v.readyState<2)return null;
+  try{
+    var k=STAGE_W/540;
+    var r=wrap.getBoundingClientRect();
+    var cw=r.width/k,chh=r.height/k;
+    if(cw<=0||chh<=0)return null;
+    var vw2=v.videoWidth,vh2=v.videoHeight;
+    var s=Math.max(cw/vw2,chh/vh2);
+    var sw=cw/s,sh=chh/s,sx=(vw2-sw)/2,sy=(vh2-sh)/2;
+    var c=document.createElement('canvas');
+    c.width=Math.round(cw*EXPORT_SCALE);
+    c.height=Math.round(chh*EXPORT_SCALE);
+    c.getContext('2d').drawImage(v,sx,sy,sw,sh,0,0,c.width,c.height);
+    return {url:c.toDataURL('image/jpeg',0.92),tainted:false};
+  }catch(e){
+    return {url:null,tainted:true};
+  }
+}
+function exportOpts(snap,forRecord){
+  return {
+    backgroundColor:'#131313',
+    scale:EXPORT_SCALE,
+    useCORS:true,
+    onclone:function(doc){
+      var card=doc.getElementById('card');
+      if(card){card.style.transform='none';}
+      var v=doc.getElementById('c-video');
+      if(forRecord){
+        /* 录制用静态底图：视频区整体清空（留 #000），图标由 canvas 逐帧绘制 */
+        if(v&&v.parentNode){v.parentNode.removeChild(v);}
+        var em=doc.getElementById('video-empty');
+        if(em){em.style.display='none';}
+      }else if(v){
+        if(snap&&snap.url){
+          var img=doc.createElement('img');
+          img.setAttribute('src',snap.url);
+          img.style.cssText='width:100%;height:100%;display:block;';
+          v.parentNode.replaceChild(img,v);
+        }else if(videoURL){
+          /* 视频帧读取失败（跨域限制）：换成占位面板，避免导出黑块 */
+          var ph=doc.createElement('div');
+          ph.style.cssText='width:100%;height:100%;background:#181818;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;';
+          var ic=doc.createElement('div');
+          ic.style.cssText='width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;';
+          ic.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="#8a8a8a"><path d="M8 5v14l11-7z"/></svg>';
+          var tx=doc.createElement('div');
+          tx.textContent='视频画面';
+          tx.style.cssText='color:#5f5f5f;font-size:15px;';
+          ph.appendChild(ic);
+          ph.appendChild(tx);
+          v.parentNode.replaceChild(ph,v);
         }
+      }
+      var rp=doc.getElementById('btn-replay');
+      if(rp&&(!videoURL||forRecord)){rp.style.display='none';}
+      var list=doc.querySelectorAll('.no-export');
+      for(var i=0;i<list.length;i++){list[i].style.display='none';}
+    }
+  };
+}
+function renderCard(snap){
+  if(typeof html2canvas==='undefined'){
+    alert('导出功能需要联网加载 html2canvas（CDN）。\n请检查网络后重试，或直接使用手机 / 电脑截图。');
+    return Promise.reject(new Error('html2canvas not loaded'));
+  }
+  return html2canvas($('card'),exportOpts(snap));
+}
+$('btn-export').addEventListener('click',function(){
+  var btn=this,old=btn.textContent;
+  btn.disabled=true;btn.textContent='正在生成…';
+  var snap=snapshotVideo();
+  renderCard(snap).then(function(canvas){
+    return new Promise(function(res){canvas.toBlob(res,'image/png');});
+  }).then(function(blob){
+    if(!blob){throw new Error('图片生成失败');}
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=((state.word||'card').replace(/[\\/:*?"<>|]+/g,'_'))+'-card.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){URL.revokeObjectURL(a.href);},8000);
+    if(snap&&snap.tainted){
+      toast('⚠️ 该视频来源不允许跨域读取，视频画面未能嵌入。请把视频保存到本地，再拖放到卡片的视频区域。',6500);
+    }else{
+      toast('已导出 PNG（1080px 宽）✓');
+    }
+  }).catch(function(err){
+    if(err&&err.message!=='html2canvas not loaded'){alert('生成失败：'+(err.message||err));}
+  }).then(function(){
+    btn.disabled=false;btn.textContent=old;
+  });
+});
+$('btn-copy').addEventListener('click',function(){
+  var btn=this,old=btn.textContent;
+  btn.disabled=true;btn.textContent='处理中…';
+  var snap=snapshotVideo();
+  renderCard(snap).then(function(canvas){
+    return new Promise(function(res,rej){
+      canvas.toBlob(function(b){b?res(b):rej(new Error('blob failed'));},'image/png');
+    });
+  }).then(function(blob){
+    if(!navigator.clipboard||!window.ClipboardItem){throw new Error('此浏览器不支持复制图片，请改用「导出 PNG」');}
+    return navigator.clipboard.write([new window.ClipboardItem({'image/png':blob})]);
+  }).then(function(){
+    toast('已复制到剪贴板 ✓');
+  }).catch(function(err){
+    alert('复制失败：'+(err&&err.message?err.message:err));
+  }).then(function(){
+    btn.disabled=false;btn.textContent=old;
+  });
+});
 
-        function updateUIStatus(msg, type = 'loading') {
-          const c = document.getElementById('subtitles');
-          const color = type === 'error' ? '#d32f2f' : '#333';
-          c.innerHTML = `<div class="loading" style="color:${color}; display:block; padding:20px;">${escapeHtml(msg)}</div>`;
-        }
-        
-        function updateFileInfo(msg, duration = 3000) {
-          const fileInfo = document.getElementById('fileInfo');
-          fileInfo.textContent = msg; fileInfo.style.display = 'block';
-          if (duration > 0) setTimeout(() => fileInfo.style.display = 'none', duration);
-        }
-        
-        function showGlobalStatus(msg, duration = 2000) {
-          const status = document.getElementById('globalStatus');
-          status.textContent = msg; status.classList.add('show');
-          setTimeout(() => status.classList.remove('show'), duration);
-        }
-        
-        function updateProgress(percent, msg = '') {
-          const container = document.getElementById('progressContainer');
-          const bar = document.getElementById('progressBar');
-          container.style.display = 'block'; bar.style.width = percent + '%';
-          if (msg) updateFileInfo(msg);
-          if (percent >= 100) setTimeout(() => container.style.display = 'none', 500);
-        }
-        
-        function updateNoteCount() {
-          AppState.noteCount = Object.keys(AppState.notesData).length;
-          const { noteCount, processedSubtitles } = AppState;
-          
-          document.getElementById('exportDropdownContainer').style.display = processedSubtitles.length > 0 ? 'block' : 'none';
-          document.getElementById('exportPdfBtn').style.display = processedSubtitles.length > 0 ? 'block' : 'none';
+/* ---------- 录制卡片视频（PNG 是静态图；这里输出会动的 MP4/WebM） ---------- */
+/* 原理：html2canvas 生成静态卡片底图 → canvas.captureStream 逐帧叠加视频帧 →
+   MediaRecorder 录制（视频原声经 AudioContext 混入音轨）→ 下载 */
+var recState=null;
+var audioGraph=null;
+var ICON_ARC=new Path2D('M3.51 15a9 9 0 1 0 2.13-9.36L1 10');
+var ICON_HEAD=new Path2D('M1 4V10H7');
+function roundRectPath(ctx,x,y,w,h,r){
+  if(ctx.roundRect){ctx.beginPath();ctx.roundRect(x,y,w,h,r);return;}
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+function drawReplayIcon(ctx,cx,cy,d){
+  var s=d/24;
+  ctx.save();
+  ctx.fillStyle='rgba(0,0,0,.45)';
+  ctx.beginPath();
+  ctx.arc(cx,cy,d/2,0,Math.PI*2);
+  ctx.fill();
+  ctx.translate(cx-12*s,cy-12*s);
+  ctx.scale(s,s);
+  ctx.strokeStyle='#fff';
+  ctx.lineWidth=2.2;
+  ctx.lineCap='round';
+  ctx.lineJoin='round';
+  ctx.stroke(ICON_ARC);
+  ctx.stroke(ICON_HEAD);
+  ctx.restore();
+}
+function pickMime(){
+  if(typeof MediaRecorder==='undefined')return null;
+  var list=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+  for(var i=0;i<list.length;i++){
+    try{ if(MediaRecorder.isTypeSupported(list[i])) return list[i]; }catch(e){}
+  }
+  return null;
+}
+function getAudioGraph(v){
+  if(audioGraph) return audioGraph;
+  var AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC) return null;
+  try{
+    var ctx=new AC();
+    var src=ctx.createMediaElementSource(v);
+    var dest=ctx.createMediaStreamDestination();
+    src.connect(dest);      /* 送进录制流 */
+    src.connect(ctx.destination); /* 保留网页监听 */
+    audioGraph={ctx:ctx,src:src,dest:dest};
+    return audioGraph;
+  }catch(e){ return null; }
+}
+$('btn-record').addEventListener('click',function(){
+  if(recState){ stopRecord(); return; }
+  startRecord();
+});
+function startRecord(){
+  if(!videoURL){ toast('请先添加视频，再录制'); return; }
+  if(typeof html2canvas==='undefined'){
+    alert('录制功能需要联网加载 html2canvas（CDN）。\n请检查网络后重试。');
+    return;
+  }
+  var mime=pickMime();
+  if(!mime){ alert('当前浏览器不支持视频录制（MediaRecorder），请使用 Chrome / Edge。'); return; }
+  var btn=$('btn-record');
+  btn.disabled=true;
+  btn.textContent='准备中…';
+  var v=$('c-video'),card=$('card'),wrap=$('video-wrap');
+  /* 视频区在画布上的位置：预览 px → 卡片单位(540 基准) → 画布 px(×2) */
+  var k=STAGE_W/540;
+  var cr=card.getBoundingClientRect(),wr=wrap.getBoundingClientRect();
+  var rect={
+    x:(wr.left-cr.left)/k*EXPORT_SCALE,
+    y:(wr.top-cr.top)/k*EXPORT_SCALE,
+    w:wr.width/k*EXPORT_SCALE,
+    h:wr.height/k*EXPORT_SCALE
+  };
+  html2canvas(card,exportOpts(null,true)).then(function(c2){
+    var url=c2.toDataURL('image/png');
+    return new Promise(function(res,rej){
+      var img=new Image();
+      img.onload=function(){res(img);};
+      img.onerror=function(){rej(new Error('底图加载失败'));};
+      img.src=url;
+    });
+  }).then(function(img){
+    var W=540*EXPORT_SCALE,H=parseFloat(card.style.height)*EXPORT_SCALE;
+    var canvas=document.createElement('canvas');
+    canvas.width=W;canvas.height=H;
+    var ctx=canvas.getContext('2d');
+    var graph=getAudioGraph(v);
+    if(graph&&graph.ctx.state==='suspended'){ graph.ctx.resume(); }
+    var stream=canvas.captureStream(30);
+    if(graph){
+      graph.dest.stream.getAudioTracks().forEach(function(t){ stream.addTrack(t); });
+    }
+    var rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:8000000});
+    var chunks=[];
+    rec.ondataavailable=function(e){ if(e.data&&e.data.size){ chunks.push(e.data); } };
+    var prevMuted=v.muted;
+    v.muted=false;
+    $('btn-mute').textContent='🔊';
+    var durSel=$('f-duration').value;
+    var duration=durSel==='video'?(isFinite(v.duration)&&v.duration>0?v.duration:10):parseFloat(durSel);
+    var st={rec:rec,chunks:chunks,mime:mime,video:v,prevMuted:prevMuted,raf:0,timer:0,elapsed:0,duration:duration,stopped:false};
+    recState=st;
+    function frame(){
+      if(st.stopped)return;
+      ctx.drawImage(img,0,0,W,H);
+      if(v.videoWidth){
+        ctx.save();
+        roundRectPath(ctx,rect.x,rect.y,rect.w,rect.h,12*EXPORT_SCALE);
+        ctx.clip();
+        var s=Math.max(rect.w/v.videoWidth,rect.h/v.videoHeight);
+        var sw=rect.w/s,sh=rect.h/s,sx=(v.videoWidth-sw)/2,sy=(v.videoHeight-sh)/2;
+        ctx.drawImage(v,sx,sy,sw,sh,rect.x,rect.y,rect.w,rect.h);
+        ctx.restore();
+      }
+      drawReplayIcon(ctx,rect.x+rect.w/2,rect.y+rect.h/2,52*EXPORT_SCALE);
+      st.raf=requestAnimationFrame(frame);
+    }
+    v.currentTime=0;
+    var p=v.play();
+    if(p&&p.catch){p.catch(function(){});}
+    rec.start(200);
+    frame();
+    document.body.classList.add('recording');
+    btn.classList.add('recording');
+    btn.disabled=false;
+    st.timer=setInterval(function(){
+      st.elapsed+=0.1;
+      if(v.ended){ v.currentTime=0; var pp=v.play(); if(pp&&pp.catch){pp.catch(function(){});} }
+      var left=Math.max(0,st.duration-st.elapsed);
+      btn.textContent='■ 停止录制（剩余 '+Math.ceil(left)+'s）';
+      if(st.elapsed>=st.duration){ stopRecord(); }
+    },100);
+  }).catch(function(err){
+    alert('录制启动失败：'+(err&&err.message?err.message:err));
+    btn.disabled=false;
+    btn.textContent='● 录制卡片视频';
+  });
+}
+function stopRecord(){
+  var st=recState;
+  if(!st)return;
+  recState=null;
+  st.stopped=true;
+  cancelAnimationFrame(st.raf);
+  clearInterval(st.timer);
+  document.body.classList.remove('recording');
+  var btn=$('btn-record');
+  btn.classList.remove('recording');
+  btn.disabled=true;
+  btn.textContent='正在保存…';
+  var done=false;
+  function finish(){
+    if(done)return;
+    done=true;
+    st.video.pause();
+    st.video.muted=st.prevMuted;
+    $('btn-mute').textContent=st.video.muted?'🔇':'🔊';
+    btn.disabled=false;
+    btn.textContent='● 录制卡片视频';
+  }
+  st.rec.onstop=function(){
+    var blob=new Blob(st.chunks,{type:st.mime});
+    var ext=/mp4/i.test(st.mime)?'mp4':'webm';
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=((state.word||'card').replace(/[\\/:*?"<>|]+/g,'_'))+'-card.'+ext;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){URL.revokeObjectURL(a.href);},8000);
+    if(ext==='webm'){
+      toast('已导出 WebM 视频。小红书网页上传需 MP4，请用转换工具转一下格式。',7000);
+    }else{
+      toast('已导出 MP4 视频 ✓ 可直接上传小红书视频帖');
+    }
+    finish();
+  };
+  setTimeout(finish,5000); /* onstop 未触发的兜底 */
+  try{ st.rec.stop(); }catch(e){ finish(); }
+}
 
-          const hasNotes = noteCount > 0;
-          document.getElementById('exportBtn').style.display = hasNotes ? 'block' : 'none';
-          document.getElementById('exportPdfNotesBtn').style.display = hasNotes ? 'block' : 'none';
-          if (hasNotes) showGlobalStatus(`目前共有 ${noteCount} 條筆記`);
-        }
-        
-        // ==================== UI 互動邏輯 ====================
-        function autoResizeTextarea(textarea) {
-          if (!AppState.notesVisible) return;
-          const subtitleRow = textarea.closest('.subtitle');
-          if (!subtitleRow) return;
-          const textBox = subtitleRow.querySelector('.text-box');
-          
-          textarea.style.height = 'auto';
-          if (textBox) textBox.style.height = 'auto';
-          
-          const textHeight = textBox ? textBox.scrollHeight : 0;
-          const noteHeight = textarea.scrollHeight;
-          let finalHeight = Math.max(textHeight, noteHeight, 34);
-          
-          const isDesktop = window.innerWidth > 900;
-          if (isDesktop && finalHeight >= 150) {
-            textarea.style.overflowY = 'auto'; finalHeight = 150;
-          } else if (!isDesktop) {
-            textarea.style.overflowY = 'auto'; finalHeight = Math.max(textHeight, 34);
-          } else {
-            textarea.style.overflowY = 'hidden';
-          }
-          
-          if (isDesktop) {
-            textarea.style.height = finalHeight + 'px';
-            if (textBox) textBox.style.height = finalHeight + 'px';
-          }
-        }
-        
-        const isJapaneseText = (text) => text && /[\u3040-\u309F\u30A0-\u30FF]/.test(text);
-        const isChineseText = (text) => text && /[\u4E00-\u9FAF]/.test(text) && !isJapaneseText(text);
+/* ---------- 词条库 ---------- */
+function getLib(){try{return JSON.parse(localStorage.getItem(LS_LIB))||[];}catch(e){return [];}}
+function saveLib(lib){try{localStorage.setItem(LS_LIB,JSON.stringify(lib));}catch(e){alert('保存失败：存储空间不足');}renderLib();}
+function renderLib(){
+  var lib=getLib(),box=$('lib-list');
+  $('lib-count').textContent=lib.length?'('+lib.length+')':'';
+  if(!lib.length){
+    box.innerHTML='<p class="hint">尚未保存任何词条。做好一张卡后点「保存词条」，下次一键换词。</p>';
+    return;
+  }
+  box.innerHTML='';
+  lib.forEach(function(item,idx){
+    var row=document.createElement('div');
+    row.className='lib-item';
+    var load=document.createElement('button');
+    load.type='button';
+    load.className='lib-load';
+    load.innerHTML='<b>'+esc(item.word)+'</b><span>'+esc((item.pos?item.pos+' ':'')+(item.meaning||''))+'</span>';
+    load.addEventListener('click',function(){loadState(item);});
+    var del=document.createElement('button');
+    del.type='button';
+    del.className='lib-del';
+    del.title='删除';
+    del.textContent='×';
+    del.addEventListener('click',function(){
+      lib.splice(idx,1);
+      saveLib(lib);
+      toast('已删除词条：'+item.word);
+    });
+    row.appendChild(load);
+    row.appendChild(del);
+    box.appendChild(row);
+  });
+}
+function loadState(item){
+  state=Object.assign({},DEMO,item);
+  delete state.savedAt;
+  fillForm();
+  setVideo(state.url||'');
+  render();
+  toast('已载入词条：'+state.word);
+}
+$('btn-save').addEventListener('click',function(){
+  var w=(state.word||'').trim();
+  if(!w){toast('请先输入单词');return;}
+  var lib=getLib();
+  var entry=JSON.parse(JSON.stringify(state));
+  entry.savedAt=Date.now();
+  for(var i=0;i<lib.length;i++){
+    if(lib[i].word===w){lib.splice(i,1);break;}
+  }
+  lib.unshift(entry);
+  saveLib(lib);
+  toast('已保存词条：'+w);
+});
+$('btn-reset').addEventListener('click',function(){
+  if(!confirm('确定要清空当前内容，恢复为示例吗？'))return;
+  state=Object.assign({},DEMO);
+  state.url='';
+  fillForm();
+  setVideo('');
+  render();
+});
 
-        window.speakText = function(btn) {
-           const text = btn.getAttribute('data-text');
-           if (!text) return;
-           if ('speechSynthesis' in window) {
-             window.speechSynthesis.cancel(); 
-             AppState.currentUtterance = new SpeechSynthesisUtterance(text);
-             AppState.currentUtterance.lang = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text) ? 'ja-JP' : 'en-US';
-             AppState.currentUtterance.rate = 0.9; 
-             window.speechSynthesis.speak(AppState.currentUtterance);
-           } else {
-             alert('您的瀏覽器不支援語音朗讀功能');
-           }
-        }
-        
-        // ==================== 數據處理核心 ====================
-        function processAndDisplayData() {
-          AppState.notesData = {};
-          
-          if (file1Data.subtitles.length > 0 && file2Data.subtitles.length > 0) {
-            updateUIStatus("偵測到雙檔案，正在自動對齊合併...", 'loading');
-            setTimeout(() => {
-              let jpSubs = file1Data.subtitles; let zhSubs = file2Data.subtitles;
-              
-              let f1KanaCount = 0; let f2KanaCount = 0;
-              for(let i=0; i<Math.min(20, file1Data.subtitles.length); i++) if (isJapaneseText(file1Data.subtitles[i].text)) f1KanaCount++;
-              for(let i=0; i<Math.min(20, file2Data.subtitles.length); i++) if (isJapaneseText(file2Data.subtitles[i].text)) f2KanaCount++;
-
-              if (f2KanaCount > f1KanaCount) { jpSubs = file2Data.subtitles; zhSubs = file1Data.subtitles; } 
-              
-              AppState.currentFileName = `${file1Data.name} + ${file2Data.name}`;
-              AppState.processedSubtitles = mergeSubtitlesArrays(jpSubs, zhSubs);
-              updateNoteCount(); updateDisplay(); 
-            }, 100);
-          } else {
-            const activeFile = file1Data.subtitles.length > 0 ? file1Data : file2Data;
-            AppState.currentFileName = activeFile.name;
-            AppState.processedSubtitles = processSingleFileSubtitles(activeFile.subtitles);
-            updateNoteCount(); updateDisplay();
-          }
-        }
-
-        function processSingleFileSubtitles(subtitles) {
-          const processed = [];
-          if (subtitles.length > 0 && subtitles[0].startTime) {
-            const timecodeMap = new Map();
-            subtitles.forEach(sub => {
-              if (!sub.startTime) return;
-              const timeKey = sub.startTime.split(/[,.]/)[0]; 
-              if (!timecodeMap.has(timeKey)) timecodeMap.set(timeKey, { jpTexts: [], zhTexts: [], rawTexts: [], startTime: sub.startTime, endTime: sub.endTime });
-              const group = timecodeMap.get(timeKey);
-              sub.text.split('\n').map(t => t.trim()).filter(Boolean).forEach(line => {
-                if (isJapaneseText(line)) group.jpTexts.push(line);
-                else if (isChineseText(line)) group.zhTexts.push(line);
-                else group.rawTexts.push(line);
-              });
-            });
-
-            Array.from(timecodeMap.values()).sort((a, b) => a.startTime.localeCompare(b.startTime)).forEach(group => {
-              let jp = group.jpTexts.join('\n'); let zh = group.zhTexts.join('\n');
-              if (!jp && !zh) jp = group.rawTexts.join('\n');
-              else if (jp && !zh && group.rawTexts.length) zh = group.rawTexts.join('\n');
-              else if (!jp && zh && group.rawTexts.length) jp = group.rawTexts.join('\n');
-
-              if (jp && !zh && /[|/\\]/.test(jp)) {
-                const parts = jp.split(/[|/\\]/).map(p => p.trim());
-                jp = parts[0]; zh = parts[1] || '';
-              }
-              processed.push({ japanese: jp, chinese: zh, originalText: jp + (zh ? ' | ' + zh : ''), isBilingual: !!(jp && zh), startTime: group.startTime, endTime: group.endTime });
-            });
-          } else {
-            for (let i = 0; i < subtitles.length; i++) {
-              const currentText = subtitles[i].text;
-              const nextText = (i + 1 < subtitles.length) ? subtitles[i+1].text : "";
-              
-              if (/[|/\\]/.test(currentText)) {
-                const parts = currentText.split(/[|/\\]/).map(p => p.trim());
-                processed.push({ japanese: parts[0], chinese: parts[1] || '', originalText: currentText, isBilingual: parts.length >= 2, startTime: '', endTime: '' });
-                continue;
-              }
-
-              if (isJapaneseText(currentText) && isChineseText(nextText)) {
-                processed.push({ japanese: currentText, chinese: nextText, originalText: currentText + ' | ' + nextText, isBilingual: true, startTime: '', endTime: '' }); i++;
-              } else if (isChineseText(currentText) && isJapaneseText(nextText)) {
-                processed.push({ japanese: nextText, chinese: currentText, originalText: nextText + ' | ' + currentText, isBilingual: true, startTime: '', endTime: '' }); i++;
-              } else {
-                processed.push({ japanese: isJapaneseText(currentText) ? currentText : (isChineseText(currentText) ? '' : currentText), chinese: isChineseText(currentText) ? currentText : '', originalText: currentText, isBilingual: false, startTime: '', endTime: '' });
-              }
-            }
-          }
-          return processed;
-        }
-
-        function mergeSubtitlesArrays(japaneseSubtitles, chineseSubtitles) {
-          const merged = [];
-          if ((japaneseSubtitles.length > 0 && japaneseSubtitles[0].startTime) || (chineseSubtitles.length > 0 && chineseSubtitles[0].startTime)) {
-            const timecodeMap = new Map();
-            const processMap = (subs, type) => {
-                subs.forEach(sub => {
-                    if (!sub.startTime) return;
-                    const timeKey = sub.startTime.split(/[,.]/)[0];
-                    if (!timecodeMap.has(timeKey)) timecodeMap.set(timeKey, { jpText: '', zhText: '', startTime: sub.startTime, endTime: sub.endTime });
-                    timecodeMap.get(timeKey)[type] += (timecodeMap.get(timeKey)[type] ? '\n' : '') + sub.text;
-                });
-            };
-            processMap(japaneseSubtitles, 'jpText'); processMap(chineseSubtitles, 'zhText');
-
-            Array.from(timecodeMap.values()).sort((a, b) => a.startTime.localeCompare(b.startTime)).forEach(item => {
-              merged.push({ japanese: item.jpText, chinese: item.zhText, originalText: item.jpText || item.zhText, isBilingual: !!(item.jpText && item.zhText), startTime: item.startTime, endTime: item.endTime });
-            });
-          } else {
-            const maxLength = Math.max(japaneseSubtitles.length, chineseSubtitles.length);
-            for (let i = 0; i < maxLength; i++) {
-              const jp = japaneseSubtitles[i] || { text: '' }; const zh = chineseSubtitles[i] || { text: '' };
-              merged.push({ japanese: jp.text || '', chinese: zh.text || '', originalText: jp.text || zh.text || '', isBilingual: !!(jp.text && zh.text), startTime: '', endTime: '' });
-            }
-          }
-          return merged;
-        }
-
-        // ==================== 檔案解析 ====================
-        const parseSRT = (content) => content ? content.replace(/\r/g, '').split(/\n\n+/).map(block => {
-            const lines = block.split('\n').filter(Boolean);
-            if (lines.length >= 3) {
-              const match = lines[1].match(/(\d{2}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2},\d{3})/);
-              return { startTime: match ? match[1] : '', endTime: match ? match[2] : '', text: lines.slice(2).join('\n') };
-            } return null;
-          }).filter(Boolean) : [];
-          
-        const parseASS = (content) => content ? content.replace(/\r/g, '').split('\n').filter(l => l.trim().startsWith('Dialogue:')).map(line => {
-            const parts = line.split(',');
-            return parts.length >= 10 ? { startTime: parts[1], endTime: parts[2], text: parts.slice(9).join(',').replace(/\\N/g, '\n').replace(/\{.*?\}/g, '').trim() } : null;
-          }).filter(item => item && item.text) : [];
-          
-        const parseTXT = (content) => content ? content.split('\n').map(l => l.trim()).filter(Boolean).map(text => ({ text })) : [];
-        
-        function parseDOCX(arrayBuffer, callback) {
-          mammoth.convertToHtml({ arrayBuffer }).then(result => {
-            const temp = document.createElement('div'); temp.innerHTML = result.value || '';
-            callback(Array.from(temp.querySelectorAll('p')).map(p => p.textContent.trim()).filter(Boolean).map(text => ({ text })));
-          }).catch(() => alert('DOCX 解析失敗'));
-        }
-        
-        function parsePDF(arrayBuffer, callback) {
-          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-          pdfjsLib.getDocument({ data: arrayBuffer }).promise.then(pdf => {
-            Promise.all(Array.from({length: pdf.numPages}, (_, i) => pdf.getPage(i + 1).then(page => page.getTextContent().then(content => {
-                let lines = [], current = [], lastY = null;
-                content.items.forEach(item => {
-                  const y = item.transform?.[5];
-                  if (lastY === null || y === null || Math.abs(y - lastY) < 5) current.push(item.str);
-                  else { if (current.length) lines.push(current.join(' ')); current = [item.str]; }
-                  lastY = y;
-                });
-                if (current.length) lines.push(current.join(' '));
-                return lines;
-            })))).then(pages => callback(pages.flat().map(l => l.trim()).filter(Boolean).map(text => ({ text }))));
-          });
-        }
-        
-        function parseEPUB(file, callback) {
-            JSZip.loadAsync(file).then(zip => zip.file("META-INF/container.xml").async("string").then(containerXml => {
-                const doc = new DOMParser().parseFromString(containerXml, "text/xml");
-                const opfPath = doc.getElementsByTagName("rootfile")[0]?.getAttribute("full-path");
-                if (!opfPath) throw new Error("無效 EPUB");
-                const basePath = opfPath.includes('/') ? opfPath.substring(0, opfPath.lastIndexOf('/') + 1) : '';
-
-                return zip.file(opfPath).async("string").then(opfXml => {
-                    const opf = new DOMParser().parseFromString(opfXml, "text/xml");
-                    const manifest = Array.from(opf.getElementsByTagName("item")).reduce((acc, el) => { acc[el.getAttribute("id")] = el.getAttribute("href"); return acc; }, {});
-                    
-                    return Promise.all(Array.from(opf.getElementsByTagName("itemref")).map(el => {
-                        const href = manifest[el.getAttribute("idref")]?.split('#')[0];
-                        const fileInZip = href && (zip.file(basePath + href) || zip.file(decodeURIComponent(basePath + href)));
-                        return fileInZip ? fileInZip.async("string").then(html => {
-                            const d = new DOMParser().parseFromString(html, "text/html");
-                            d.querySelectorAll('script, style, svg, img').forEach(s => s.remove());
-                            ['p', 'div', 'h1', 'h2', 'li', 'br'].forEach(tag => d.querySelectorAll(tag).forEach(e => { e.insertAdjacentText('beforebegin', '\n'); e.insertAdjacentText('afterend', '\n'); }));
-                            return (d.body || d).textContent.split('\n').map(t => t.trim()).filter(Boolean);
-                        }) : [];
-                    }));
-                });
-            })).then(pages => callback(pages.flat().map(text => ({ text }))))
-            .catch(err => updateUIStatus('EPUB 解析失敗，請確認檔案', 'error'));
-        }
-        
-        // ==================== 檔案操作 ====================
-        function clearFile(num) {
-            if (num === 1) file1Data = { name: "", subtitles: [] };
-            if (num === 2) file2Data = { name: "", subtitles: [] };
-            document.getElementById(`fileInput${num}`).value = '';
-            document.getElementById(`textFile${num}`).textContent = `選擇檔案 ${num}`;
-            document.getElementById(`labelFile${num}`).classList.remove('has-file');
-            document.getElementById(`clearBtn${num}`).style.display = 'none';
-
-            if (!file1Data.subtitles.length && !file2Data.subtitles.length) {
-                document.getElementById('subtitles').innerHTML = ''; AppState.processedSubtitles = []; AppState.notesData = {};
-                updateNoteCount(); showGlobalStatus('已清空所有檔案');
-            } else { processAndDisplayData(); showGlobalStatus(`已恢復單一檔案顯示`); }
-        }
-        
-        document.getElementById('clearBtn1').addEventListener('click', () => clearFile(1));
-        document.getElementById('clearBtn2').addEventListener('click', () => clearFile(2));
-
-        function handleFileChoose(file, targetData, num) {
-          if (!file) return clearFile(num);
-          document.getElementById('textFile' + num).textContent = file.name;
-          document.getElementById('labelFile' + num).classList.add('has-file');
-          document.getElementById('clearBtn' + num).style.display = 'block';
-
-          const ext = file.name.split('.').pop().toLowerCase();
-          updateUIStatus(`正在解析 ${file.name}...`);
-          targetData.name = file.name;
-          
-          if (ext === 'epub') return parseEPUB(file, subs => { targetData.subtitles = subs; processAndDisplayData(); });
-          
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const res = e.target.result;
-            if (ext === 'srt') targetData.subtitles = parseSRT(res);
-            else if (ext === 'ass') targetData.subtitles = parseASS(res);
-            else if (ext === 'txt') targetData.subtitles = parseTXT(res);
-            else if (ext === 'docx') return parseDOCX(res, subs => { targetData.subtitles = subs; processAndDisplayData(); });
-            else if (ext === 'pdf') return parsePDF(res, subs => { targetData.subtitles = subs; processAndDisplayData(); });
-            else return alert('不支援的格式') || clearFile(num);
-            processAndDisplayData();
-          };
-          ['docx', 'pdf'].includes(ext) ? reader.readAsArrayBuffer(file) : reader.readAsText(file, 'utf-8');
-        }
-
-        document.getElementById('fileInput1').addEventListener('change', e => handleFileChoose(e.target.files[0], file1Data, 1));
-        document.getElementById('fileInput2').addEventListener('change', e => handleFileChoose(e.target.files[0], file2Data, 2));
-        
-        // ==================== 渲染與無限滾動 ====================
-        function createSubtitleRowHTML(item) {
-          const { sub, originalIndex, isContext, highlightJp, highlightZh } = item;
-          const noteContent = AppState.notesData[originalIndex] || '';
-          const classes = noteContent ? 'has-written-note' : '';
-          const noteClasses = noteContent ? 'has-content' : '';
-          
-          return `<div class="row" data-index="${originalIndex}" ${isContext ? 'style="opacity: 0.5;"' : ''}>
-              <div class="subtitle ${classes}">
-                <div class="text-box">
-                  <div class="japanese-text">${highlightJp}</div>
-                  ${sub.chinese ? `<div class="chinese-text">${highlightZh}</div>` : ''}
-                  <div class="row-actions"><button class="action-btn" data-text="${escapeHtml(sub.japanese || sub.originalText)}" onclick="speakText(this)">🔊</button></div>
-                </div>
-                <div class="note-area"><div class="note-container"><textarea class="note-box ${noteClasses}" data-index="${originalIndex}" placeholder="輸入筆記...">${escapeHtml(noteContent)}</textarea></div></div>
-              </div>
-            </div>`;
-        }
-        
-        function updateDisplay(query = '') {
-            if (query !== undefined) {
-                let displayData = [];
-                if (!query) {
-                    displayData = AppState.processedSubtitles.map((sub, i) => ({ sub, originalIndex: i, isContext: false, highlightJp: escapeHtml(sub.japanese || ''), highlightZh: escapeHtml(sub.chinese || '') }));
-                } else {
-                    const regex = new RegExp('(' + escapeRegExp(query) + ')', 'gi');
-                    let indices = new Set();
-                    AppState.processedSubtitles.forEach((sub, idx) => {
-                        if (((sub.japanese || '') + ' ' + (sub.chinese || '')).match(regex)) {
-                            indices.add(idx); if (idx > 0) indices.add(idx - 1); if (idx < AppState.processedSubtitles.length - 1) indices.add(idx + 1);
-                        }
-                    });
-                    Array.from(indices).sort((a,b) => a - b).forEach(idx => {
-                        const sub = AppState.processedSubtitles[idx];
-                        const isMatch = ((sub.japanese || '') + ' ' + (sub.chinese || '')).match(regex);
-                        let highlightJp = escapeHtml(sub.japanese || ''); let highlightZh = escapeHtml(sub.chinese || '');
-                        if (isMatch) { highlightJp = highlightJp.replace(regex, '<span class="highlight">$1</span>'); highlightZh = highlightZh.replace(regex, '<span class="highlight">$1</span>'); }
-                        displayData.push({ sub, originalIndex: idx, isContext: !isMatch, highlightJp, highlightZh });
-                    });
-                }
-                AppState.filteredData = displayData;
-            }
-
-            // 重置渲染狀態
-            AppState.renderedCount = 0;
-            const container = document.getElementById('subtitles');
-            container.innerHTML = ''; 
-
-            // 渲染第一批資料
-            renderNextBatch();
-            
-            document.body.classList.toggle('single-language', !AppState.bilingualEnabled);
-            if (query !== undefined) window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function renderNextBatch() {
-            if (AppState.renderedCount >= AppState.filteredData.length) return; // 已全部渲染完畢
-
-            const chunkSize = 50; // 每次觸底加載的句數
-            const nextBatch = AppState.filteredData.slice(AppState.renderedCount, AppState.renderedCount + chunkSize);
-            
-            const container = document.getElementById('subtitles');
-            container.insertAdjacentHTML('beforeend', nextBatch.map(createSubtitleRowHTML).join(''));
-            
-            // 針對剛加載進來有內容的筆記框進行高度計算
-            container.querySelectorAll(`.row:nth-child(n+${AppState.renderedCount + 1}) .note-box.has-content`).forEach(autoResizeTextarea);
-            
-            AppState.renderedCount += nextBatch.length;
-        }
-
-        // 建立無限滾動觸發器 (Intersection Observer)
-        const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting) {
-                renderNextBatch();
-            }
-        }, { rootMargin: '400px' }); // 距離底部還有 400px 時就提早加載，做到無縫滑動
-
-        // 綁定感應區
-        window.addEventListener('DOMContentLoaded', () => {
-            observer.observe(document.getElementById('scrollSentinel'));
-        });
-
-        const debouncedSearch = debounce((e) => updateDisplay(e.target.value.trim()), 300);
-        document.getElementById('searchBox').addEventListener('input', debouncedSearch);
-
-        // ==================== 存檔與拖曳邏輯 ====================
-        const saveTimers = {};
-        const saveNote = (noteBox) => {
-            const index = parseInt(noteBox.dataset.index);
-            const val = noteBox.value.trim();
-            if (val) { AppState.notesData[index] = val; noteBox.classList.add('has-content'); noteBox.closest('.row').querySelector('.subtitle').classList.add('has-written-note'); } 
-            else { delete AppState.notesData[index]; noteBox.classList.remove('has-content'); noteBox.closest('.row').querySelector('.subtitle').classList.remove('has-written-note'); }
-            updateNoteCount();
-        };
-
-        const subtitlesContainer = document.getElementById('subtitles');
-        subtitlesContainer.addEventListener('input', e => {
-            if (e.target.classList.contains('note-box')) {
-                autoResizeTextarea(e.target);
-                clearTimeout(saveTimers[e.target.dataset.index]);
-                saveTimers[e.target.dataset.index] = setTimeout(() => saveNote(e.target), 500);
-            }
-        });
-        subtitlesContainer.addEventListener('focusout', e => { if (e.target.classList.contains('note-box')) saveNote(e.target); });
-
-        subtitlesContainer.addEventListener('dragover', e => { if (e.target.classList.contains('note-box')) { e.preventDefault(); e.target.style.borderColor = '#4CAF50'; } });
-        subtitlesContainer.addEventListener('dragleave', e => { if (e.target.classList.contains('note-box')) e.target.style.borderColor = ''; });
-        subtitlesContainer.addEventListener('drop', e => {
-            if (e.target.classList.contains('note-box')) {
-                e.preventDefault(); e.target.style.borderColor = '';
-                if (e.dataTransfer.files?.length) return;
-                const text = e.dataTransfer.getData('text/plain');
-                if (text) {
-                    const cur = e.target.value; e.target.value = cur + (cur && !cur.endsWith('\n') ? '\n' : '') + text;
-                    e.target.selectionStart = e.target.selectionEnd = e.target.value.length;
-                    e.target.dispatchEvent(new Event('input', { bubbles: true }));  
-                }
-            }
-        });
-
-        // ==================== 按鈕與匯出邏輯 ====================
-        document.getElementById('bilingualBtn').addEventListener('click', function() {
-          AppState.bilingualEnabled = !AppState.bilingualEnabled; this.textContent = AppState.bilingualEnabled ? '單語顯示' : '雙語顯示';
-          document.body.classList.toggle('single-language', !AppState.bilingualEnabled);
-          document.querySelectorAll('.note-box').forEach(autoResizeTextarea);
-        });
-
-        document.getElementById('toggleNotesBtn').addEventListener('click', function() {
-          AppState.notesVisible = !AppState.notesVisible; this.textContent = AppState.notesVisible ? '隱藏筆記' : '顯示筆記';
-          document.body.classList.toggle('hide-notes', !AppState.notesVisible);
-          AppState.notesVisible ? document.querySelectorAll('.note-box').forEach(autoResizeTextarea) : document.querySelectorAll('.text-box').forEach(t => t.style.height = 'auto');
-        });
-
-        const exportMenu = document.getElementById('exportMenu');
-        document.getElementById('mainExportBtn').addEventListener('click', e => { e.stopPropagation(); exportMenu.classList.toggle('show'); });
-        window.addEventListener('click', () => exportMenu.classList.remove('show'));
-
-        document.getElementById('importBtn').addEventListener('click', () => AppState.processedSubtitles.length ? document.getElementById('importFileInput').click() : alert('請先上傳檔案'));
-        document.getElementById('importFileInput').addEventListener('change', e => {
-          const file = e.target.files[0]; if (!file) return;
-          const reader = new FileReader();
-          reader.onload = ev => {
-            try {
-              const doc = new DOMParser().parseFromString(ev.target.result, 'text/html');
-              let count = 0;
-              doc.querySelectorAll('.export-item').forEach(item => {
-                const idx = parseInt(item.getAttribute('data-original-index'));
-                const text = item.querySelector('.export-note-content')?.textContent.trim();
-                if (text && idx < AppState.processedSubtitles.length) { AppState.notesData[idx] = text; count++; }
-              });
-              if (count > 0) { updateDisplay(undefined); updateNoteCount(); showGlobalStatus(`成功導入 ${count} 條筆記！`); } 
-            } catch { alert('解析失敗'); }
-          }; reader.readAsText(file); e.target.value = '';
-        });
-
-        const triggerDownload = (htmlStr, suffix) => {
-            const blob = new Blob([htmlStr], { type: 'text/html;charset=utf-8' });
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-            a.download = `${getSafeFileName()}_${suffix}.html`; a.click();
-        };
-
-        document.getElementById('exportBtn').addEventListener('click', () => {
-          const notes = Object.entries(AppState.notesData).filter(([_, n]) => n.trim());
-          if (!notes.length) return alert('目前沒有筆記可供匯出');
-          
-          const items = notes.map(([idx, note], i) => {
-            const s = AppState.processedSubtitles[idx];
-            const title = s.chinese ? `${s.japanese} | ${s.chinese}` : s.japanese;
-            const time = (s.startTime && s.endTime) ? `<div class="export-timecode" style="color:#666; font-size:12px; margin-bottom:6px; margin-left:24px;">⏱ ${escapeHtml(s.startTime)} --> ${escapeHtml(s.endTime)}</div>` : '';
-            return `<div class="export-item" data-original-index="${idx}"><div style="display:flex; align-items:baseline; gap:8px;"><div style="font-weight:bold;">${i+1}.</div><div style="font-weight:bold; color:#2c3e50;">${escapeHtml(title)}</div></div>${time}<div class="export-note-content" style="color:#e67e22; white-space:pre-wrap; background:#fff8e1; padding:10px; border-radius:4px; border-left:4px solid #ff9800; margin-bottom: 16px;">${escapeHtml(note)}</div></div><hr style="border:0; border-top:1px dashed #eee; margin:16px 0;" />`;
-          }).join('');
-          triggerDownload(`<!doctype html><html><head><meta charset="utf-8"><title>筆記備份_${escapeHtml(AppState.currentFileName)}</title><style>body{padding:20px;font-family:sans-serif;}</style></head><body><h2>${escapeHtml(AppState.currentFileName)} - 筆記備份</h2><p style="color:#666;font-size:12px;">此為您撰寫的筆記紀錄，可隨時重新導入系統中。</p><hr style="margin-bottom:20px;"/>${items}</body></html>`, '筆記備份');
-        });
-
-        const triggerPrint = (htmlStr) => {
-            const win = window.open('', '_blank'); win.document.write(htmlStr); win.document.close();
-            setTimeout(() => { win.focus(); win.print(); }, 250);
-        };
-
-       document.getElementById('exportPdfNotesBtn').addEventListener('click', () => {
-          const notes = Object.entries(AppState.notesData).filter(([_, n]) => n.trim());
-          if (!notes.length) return alert('目前沒有筆記');
-          const items = notes.map(([idx, note], i) => {
-            const s = AppState.processedSubtitles[idx];
-            return `<div style="page-break-inside: avoid;"><div style="display:flex; align-items:baseline; gap:8px;"><div style="font-weight:bold;">${i+1}.</div><div style="font-weight:bold; color:#2c3e50;">${escapeHtml(s.chinese ? `${s.japanese} | ${s.chinese}` : s.japanese)}</div></div><div style="color:#e67e22; white-space:pre-wrap; background:#fff8e1 !important; padding:10px; border-radius:4px; border-left:4px solid #ff9800; margin-bottom: 16px; -webkit-print-color-adjust: exact; print-color-adjust: exact;">${escapeHtml(note)}</div></div>`;
-          }).join('<hr style="border:0; border-top:1px dashed #eee; margin:16px 0;" />');
-          triggerPrint(`<!doctype html><html lang="zh"><head><meta charset="utf-8"><title>${escapeHtml(AppState.currentFileName)} - 筆記講義</title><style>@page{margin:20mm 15mm;}body{font-family:sans-serif; line-height:1.6; margin:0; padding:20px;}</style></head><body><div style="text-align:center; margin-bottom:30px;"><h1 style="margin:0 0 10px 0;">${escapeHtml(getSafeFileName())} - 筆記整理</h1><p style="margin:0; color:#666; font-size:12px;">總計：${notes.length} 條</p></div><hr style="border:0; border-top:2px solid #2c3e50; margin-bottom:20px;"/>${items}</body></html>`);
-        });
-
-        document.getElementById('exportPdfBtn').addEventListener('click', () => {
-          if (!AppState.processedSubtitles.length) return alert('沒有資料可列印');
-          const items = AppState.processedSubtitles.map((sub, idx) => {
-            const note = AppState.notesData[idx];
-            const hasZh = !!sub.chinese;
-            return `<div class="row-item"><div class="biling"><div class="jp ${hasZh ? 'divi' : 'full'}">${escapeHtml(sub.japanese || sub.originalText)}</div>${hasZh ? `<div class="zh">${escapeHtml(sub.chinese)}</div>` : ''}</div>${note ? `<div class="note-box"><div class="note-label">📝 筆記</div><div class="note-content">${escapeHtml(note)}</div></div>` : ''}</div>`;
-          }).join('');
-          triggerPrint(`<!doctype html><html lang="zh"><head><meta charset="utf-8"><title>${escapeHtml(AppState.currentFileName)} - 全文講義</title><style>@page{margin:20mm 15mm;}body{font-family:sans-serif; background:#fdfdfd; padding:20px;}.row-item{background:#fff; padding:16px 20px; margin-bottom:12px; border-radius:8px; page-break-inside:avoid; border:1px solid #f0f0f0;}.biling{display:flex; gap:24px; align-items:flex-start;}.jp{font-size:16px; font-weight:600; color:#2c3e50; line-height:1.7;}.zh{flex:1; width:50%; font-size:15px; color:#555; line-height:1.7;}.divi{flex:1; width:50%; border-right:1px solid #eaeaea; padding-right:24px;}.full{width:100%;}.note-box{background:#fffaf0; border-left:4px solid #f39c12; padding:12px 16px; margin-top:12px;}.note-label{font-size:12px; font-weight:bold; color:#d35400; margin-bottom:6px;}.note-content{font-size:14px; white-space:pre-wrap;} @media print{body{background:#fff; padding:0;}.row-item{border:none; border-bottom:1px solid #eee; margin-bottom:15px; padding:15px 0; border-radius:0;}.note-box{-webkit-print-color-adjust:exact; print-color-adjust:exact; background:#fffaf0 !important; border-color:#f39c12 !important; padding:10px 14px;}}</style></head><body><div style="text-align:center; margin-bottom:40px; padding-bottom:20px; border-bottom:1px solid #e0e0e0;"><h1 style="margin:0; font-size:26px;">${escapeHtml(getSafeFileName())}</h1></div>${items}</body></html>`);
-        });
-        
-        window.addEventListener('beforeunload', e => { if (AppState.noteCount > 0) { e.preventDefault(); e.returnValue = '有未匯出的筆記，確定離開？'; } });
-    </script>
+/* ---------- 初始化 ---------- */
+(function init(){
+  var cur=null;
+  try{cur=JSON.parse(localStorage.getItem(LS_CUR));}catch(e){}
+  if(cur&&cur.word){state=Object.assign({},DEMO,cur);}
+  fillForm();
+  render();
+  renderLib();
+  setVideo(state.url||'');
+  if('speechSynthesis' in window){
+    try{window.speechSynthesis.getVoices();}catch(e){}
+  }
+  /* 不支持录制（无 MediaRecorder 或 canvas.captureStream）时隐藏录制区块 */
+  var recOk=(typeof MediaRecorder!=='undefined')&&!!document.createElement('canvas').captureStream;
+  if(!recOk){
+    var blk=$('rec-block');
+    if(blk){blk.style.display='none';}
+  }
+})();
+})();
+</script>
 </body>
 </html>
